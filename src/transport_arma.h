@@ -11,6 +11,15 @@ using namespace std;
 using namespace lemon;
 //[[Rcpp::export]]
 
+// This file has been taken with minimal change from the transport package 
+// (https://cran.r-project.org/web/packages/transport/index.html), which
+// is imported by this package. 
+// The only changes are replacing the RcppEigen library with RcppArmadillo
+// making a copy of the original function and have the first copy only return 
+// the transport plan and the second function only the dual potentials. 
+// This changes have no effect other than providing less output and 
+// avoiding having to install RcppEigen to run this.
+
 arma::mat transport_network_dual_arma(arma::mat a, arma::mat b, arma::mat C){
   struct TsFlow {
     int from, to;
