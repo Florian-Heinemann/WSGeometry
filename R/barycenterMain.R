@@ -41,7 +41,10 @@
 #' "alternating". This method computes the best approximation of the barycenter with a certain support size. It alternates between finding the best positions
 #' for given weights and then finding the best weights for these positions. See Cuturi and Doucet (2014) for details. \cr
 #' "sampling". This method uses the SUA method of Heinemann et al. (2020) to generate a stochastic approximation of the barycenter.  It 
-#' replaces the original measures by empirical measures obtained from samples of size 'sample.size' from each data measure.
+#' replaces the original measures by empirical measures obtained from samples of size 'sample.size' from each data measure.\cr
+#' The unregularised optimal transport problems, which need to be solved for the iterative methods, without regularisation, in each iteration step, are solved using the 
+#' "networkflow" method of the \link[transport]{transport} function (which is a modification of the LEMON Library by Nicolas Bonneel, see the 
+#' \link[transport]{transport-package} for details). 
 #' @examples 
 #' \dontrun{
 #' ##Basic Examples
