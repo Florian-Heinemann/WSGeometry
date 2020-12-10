@@ -11,7 +11,7 @@ ws_logpca(data.list, barycenter, pca.count, steps_number = 21)
 A matrix, representing an image; A file name containing an image; 
 A \link[transport]{wpp-object}; 
 A \link[transport]{pp-object};
-A list containing an entry `positions` with the support of the measure and an entry `weights``containing the weights of the support points;
+A list containing an entry `positions` with the support of the measure and an entry `weights` containing the weights of the support points;
 A list containing en entry `positions` specifying the support of a measure with uniform weights.}
 
 \item{barycenter}{A barycenter of the dataset. See data.list for possible object types.}
@@ -21,7 +21,7 @@ A list containing en entry `positions` specifying the support of a measure with 
 \item{steps_number}{An integer specifying the number of discretisation steps for the output of the principal components.}
 }
 \value{
-A list with two entries. The first contains a list, where each entry is a list of \link[transport]{wpp-object}s specifying one point on this principal
+A list with two entries. The first contains a list (of length pca.count), where each entry is a list of \link[transport]{wpp-object}s specifying one point on the corresponding principal
 component. The second entry is a vector containing the eigenvalues of the computed principal components. The output can be plotted by applying
 \link[WSGeometry]{plotGeodesic} to each component of the list.
 }
@@ -68,7 +68,7 @@ plotGeodesic(pcomps$components[[3]],File="PCA3")
 
 }
 \references{
-E Cazelles, V Seguy, J Bigot, M Cuturi, N Papadakis (2017); Log-PCA versus Geodesic PCA of histograms 
-in the Wasserstein space. SIAM Journal on Scientific Computing 40(2), B429–B456. \cr
-W Wei, D Slepcev, S Basu, JA Ozolek, GK Rohde (2013). A Linear Optimal Transportation Framework for Quantifying and Visualizing Variations in Sets of Images. International Journal of Computer Vision 101(2):254-269.
+E Cazelles, V Seguy, J Bigot, M Cuturi, and N Papadakis (2017); Log-PCA versus Geodesic PCA of histograms 
+in the Wasserstein space. SIAM Journal on Scientific Computing 40(2):B429–B456. \cr
+W Wei, D Slepcev, S Basu, JA Ozolek, and GK Rohde (2013). A Linear Optimal Transportation Framework for Quantifying and Visualizing Variations in Sets of Images. International Journal of Computer Vision 101(2):254-269.
 }

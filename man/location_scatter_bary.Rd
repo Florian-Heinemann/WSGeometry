@@ -2,7 +2,7 @@
 % Please edit documentation in R/location_scatter_bary.R
 \name{location_scatter_bary}
 \alias{location_scatter_bary}
-\title{Computes the 2-Wasserstein barycenter of location-scatter families of measures.}
+\title{Computes the 2-Wasserstein barycenter of location-scatter families of measures}
 \usage{
 location_scatter_bary(means, cov, thresh = 10^(-5), maxiter = 100,
   showIter = FALSE)
@@ -84,6 +84,6 @@ par(op)
 \references{
 PC Álvarez-Esteban, E del Barrio, JA Cuesta-Albertos, and C Matrán (2016).
 A fixed-point approach to barycenters in Wasserstein space. J. Math. Anal.
-Appl., 441(2):744–762,\cr
+Appl., 441(2):744–762.\cr
 Y Zemel and VM Panaretos (2019). Fréchet Means and Procrustes Analysis in Wasserstein Space. Bernoulli 25(2):932-976.
 }

@@ -44,7 +44,7 @@ points(bary$positions[,1],bary$positions[,2], col = "orange", pch = 13)
 }
 \references{
 E Anderes, S Borgwardt, and J Miller (2016). Discrete Wasserstein barycenters: 
-Optimal transport for discrete data. Mathematical Methods of Operations Research, 84(2), pp.389-409.\cr
+Optimal transport for discrete data. Mathematical Methods of Operations Research, 84(2):389-409.\cr
 S Borgwardt and S Patterson (2020). Improved linear programs for discrete barycenters.
 Informs Journal on Optimization 2(1):14-33.
 }

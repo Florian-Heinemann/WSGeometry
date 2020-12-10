@@ -15,7 +15,7 @@ A file name containing an image; A \link[transport]{wpp-object}.}
 
 \item{p}{A positive real number specifying the power of the Wasserstein distance.}
 
-\item{sampling}{A boolean specifying whether a stochastic approximation (Sommerfeld et al. 2019) should be used to approximate the distance.}
+\item{sampling}{A boolean specifying whether a stochastic approximation (Sommerfeld et al., 2019) should be used to approximate the distance.}
 
 \item{S}{A positive integer specifying the number of samples drawn in the stochastic approximation.}
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/visual_geodesics.R
 \name{plotGeodesic}
 \alias{plotGeodesic}
-\title{Plot previously computed Wasserstein geodesics.}
+\title{Plot previously computed Wasserstein geodesics}
 \usage{
 plotGeodesic(Geodesic, method = "default", images = TRUE, gif = TRUE,
   File = "Geodesic", resolution = c(400, 400), dotsize = 2,
@@ -43,7 +43,7 @@ The first entry controls the horizontal direction and the second controls the ve
 
 \item{theta}{A number specifying the viewing direction in the three dimensional setting. It gives the azimuthal direction of the plot.}
 
-\item{fps}{A positive number specifying the number of frames per second in the output gif.}
+\item{fps}{A positive number specifying the number of frames per second in the output gif.  The default adjusts the fps to output a gif file of length 10 seconds.}
 }
 \value{
 This function does not provide any return value, but instead generates output files in the current working directory.

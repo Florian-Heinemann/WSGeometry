@@ -16,7 +16,7 @@ wasserstein_bary(data.list, frechet.weights = NULL,
 \item{data.list}{A list of objects of which the barycenter should be computed. Each element should be one of the following:
 A matrix, representing an image; A path to a file containing an image; 
 A \link[transport]{wpp-object}; 
-A \link[transport]{pp-object}
+A \link[transport]{pp-object};
 A list containing an entry named `positions` with the support of the measure and an entry named `weights` containing the weights of the support points;
 A list containing en entry named `positions`` specifying the support of a measure with uniform weights.}
 
@@ -25,12 +25,12 @@ A list containing en entry named `positions`` specifying the support of a measur
 \item{method}{A string specifiying the method to be used. This also determines which of the other parameters are active/used in this function call. See details
 for the specific methods currently available.}
 
-\item{return_type}{A string specifying the format of the output. The currently available options are "default" (which is list with entries `positions` and `weights``);
-"wpp"- which gives a \link[transport]{wpp-object} and "image_mat" for a matrix of the same dimensions as the input matrices (only for the regular method).}
+\item{return_type}{A string specifying the format of the output. The currently available options are "default" (which gives list with entries `positions` and `weights`);
+"wpp"- which gives a \link[transport]{wpp-object}; and "image_mat" for a matrix of the same dimensions as the input matrices (only for the regular method).}
 
 \item{supp.size}{A positive integer specifying the size of the support used to approximate the barycenter in the "alternating" method.}
 
-\item{output.supp}{A Mxd matrix specifying the support set on which the optimal weights of the barycenter should be approximated when method = "fixed_support". Each row of the matrix represents one support point in R^d.}
+\item{output.supp}{An Mxd matrix specifying the support set on which the optimal weights of the barycenter should be approximated when method = "fixed_support". Each row of the matrix represents one support point in R^d.}
 
 \item{shared}{A boolean flag specifying whether all measures have the same support set and the weights of the barycenter should be optimised over this set as well.}
 
@@ -53,7 +53,7 @@ maxIter * (weights_maxIter+pos_maxIter).}
 
 \item{warmstartlength}{A positive integer specifying the length of the warmstart. The number of steps in the SGD in the warmstart is `length(data.list)*warmstartlength`.}
 
-\item{showIter}{A boolean speciying whether the number of "outer" iterations performed should be shown at the end.}
+\item{showIter}{A boolean specifying whether the number of "outer" iterations performed should be shown at the end.}
 
 \item{threads}{A positive integer specifying the number of threads used for parallel computing.}
 }
@@ -63,20 +63,23 @@ This function computes the Wasserstein barycenter of a list of suitable objects 
 \details{
 This is the main function of this package.  It computes/approximates 2-Wasserstein barycenters using the different methods outlined in the following. \cr
 "lp". Here the barycenter problem can be posed as a linear program. This method builds and solves this linear program. While this gives exact
-solutions to the problem, this method is highly run-time extensive should only be used on small datasets. (See Anderes et al. (2016) and Borgwardt & Patterson (2020) for details)
+solutions to the problem, this method is highly run-time extensive and should only be used on small datasets. (See Anderes et al. (2016) and Borgwardt & Patterson (2020) for details). \cr
 "regular". This method solves the entropy-regularised fixed support barycenter problem. Here, a penalisation term is introduced to the problem, which 
-yields a strictly convex problem, which can be solved with Sinkhorn's Algorithm (for details see Benamou et al. (2015)). Additionally, it is 
+yields a strictly convex problem that can be solved with Sinkhorn's algorithm (for details see Benamou et al. (2015)). Additionally, it is 
 assumed that all the measures have the same support set, and instead of an exact (regularised) barycenter, the methods finds the best solution
 having the same support as the data. This is quite reasonable when the dataset consists of images and the barycenter should be an image as well.  The choice of the
-regularisation paramter "regular" is a delicate issue. Large values reduce the runtime, but yield "blurry" barycenters.  Small values
+regularisation parameter "regular" is a delicate issue. Large values reduce the runtime, but yield "blurry" barycenters.  Small values
 yield sharper results, but have longer run-time and may cause numerical instabilities. The choice of this parameter depends on the dataset at hand,
 and will typically require tuning. \cr
 "fixed_support". This method computes the best approximation of the barycenter, which is supported on a pre-specified support set (as supplied by the parameter "output.support"). Contrary to the "regular"
-method, here this set does not need to coincide with any of the support sets of the data measures.  See Cuturi and Doucet (2014) for details. \cr
+method, here this set does not need to coincide with any of the support sets of the data measures.  See Cuturi & Doucet (2014) for details. \cr
 "alternating". This method computes the best approximation of the barycenter with a certain support size. It alternates between finding the best positions
 for given weights and then finding the best weights for these positions. See Cuturi and Doucet (2014) for details. \cr
 "sampling". This method uses the SUA method of Heinemann et al. (2020) to generate a stochastic approximation of the barycenter.  It 
-replaces the original measures by empirical measures obtained from samples of size 'sample.size' from each data measure.
+replaces the original measures by empirical measures obtained from samples of size 'sample.size' from each data measure.\cr
+The unregularised optimal transport problems, which need to be solved for the iterative methods, without regularisation, in each iteration step, are solved using the 
+"networkflow" method of the \link[transport]{transport} function (which is a modification of the LEMON Library by Nicolas Bonneel, see the 
+\link[transport]{transport-package} for details).
 }
 \examples{
 \dontrun{
@@ -176,11 +179,11 @@ plot(res5)
 }
 \references{
 E Anderes, S Borgwardt, and J Miller (2016). Discrete Wasserstein barycenters: 
-Optimal transport for discrete data. Mathematical Methods of Operations Research, 84(2):389-409 \cr
+Optimal transport for discrete data. Mathematical Methods of Operations Research, 84(2):389-409. \cr
 S Borgwardt and S Patterson (2020). Improved linear programs for discrete barycenters.
 Informs Journal on Optimization 2(1):14-33.\cr
-J-D Benamou, G Carlier, M Cuturi, L Nenna, G Peyr{\'e} (2015). 
-Iterative Bregman projections for regularized transportation problems." SIAM Journal on Scientific Computing 37(2):A1111-A1138. \cr
+J-D Benamou, G Carlier, M Cuturi, L Nenna, and G Peyré (2015). 
+Iterative Bregman projections for regularized transportation problems. SIAM Journal on Scientific Computing 37(2):A1111-A1138. \cr
 M Cuturi and A Doucet (2014). Fast Computation of Wasserstein Barycenters. Proceedings of the 31st International Conference on Machine Learning, PMLR 32(2):685-693. \cr
-F Heinemann, A Munk, and Y Zemel (2020). Randomised Wasserstein Barycenter Computation: Resampling with statistical guarantees.  arXiv:202012,?????.
+F Heinemann, A Munk, and Y Zemel (2020). Randomised Wasserstein barycenter computation: Resampling with statistical guarantees. arXiv preprint.
 }

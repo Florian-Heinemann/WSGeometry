@@ -9,7 +9,6 @@
 using namespace Rcpp;
 using namespace std;
 using namespace lemon;
-//[[Rcpp::export]]
 
 // This file has been taken with minimal change from the transport package 
 // (https://cran.r-project.org/web/packages/transport/index.html), which
@@ -20,6 +19,7 @@ using namespace lemon;
 // This changes have no effect other than providing less output and 
 // avoiding having to install RcppEigen to run this.
 
+//[[Rcpp::export]]
 arma::mat transport_network_dual_arma(arma::mat a, arma::mat b, arma::mat C){
   struct TsFlow {
     int from, to;

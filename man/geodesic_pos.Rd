@@ -13,7 +13,7 @@ A file name containing an image; A \link[transport]{wpp-object}.}
 \item{P2}{One of the following: A matrix, representing an image;
 A file name containing an image; A \link[transport]{wpp-object}.}
 
-\item{p}{A real number >= specifying the exponent of the Wasserstein distance.}
+\item{p}{A real number >=1 specifying the exponent of the Wasserstein distance.}
 
 \item{steps}{A vector of numbers in [0,1] describing the time points at which the geodesic should be evaluated.}
 }
@@ -22,7 +22,7 @@ A list of the same length as steps where each element is a \link[transport]{wpp-
 corresponding times in steps.
 }
 \description{
-Compute Wasserstein geodesics
+Computes the geodesic between two measures P1 and P2 in arbitrary dimensions at given timepoints.
 }
 \examples{
 \dontrun{

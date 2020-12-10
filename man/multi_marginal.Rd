@@ -13,7 +13,7 @@ multi_marginal(weights, costA)
 and so on.}
 }
 \value{
-A list with two entries. The first entry contains the optimal Multi-Coupling in array form, while the second entry contains 
+A list with two entries. The first entry contains the optimal multicoupling in array form, and the second entry contains 
 the cost of the optimal solution.
 }
 \description{
