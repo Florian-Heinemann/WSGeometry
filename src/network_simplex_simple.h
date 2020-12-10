@@ -1,5 +1,8 @@
 /* -*- mode: C++; indent-tabs-mode: nil; -*-
 *
+* This file has been taken without change from the transport package 
+* (https://cran.r-project.org/web/packages/transport/index.html), which
+* is imported by this package, and has only been included here again for technical reasons. 
 *
 * This file has been adapted by Nicolas Bonneel (2013),
 * from network_simplex.h from LEMON, a generic C++ optimization library,
