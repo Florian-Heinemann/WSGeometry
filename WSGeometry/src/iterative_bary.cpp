@@ -56,7 +56,7 @@ arma::mat gen_cost(const arma::mat A,const arma::mat B){
 }
 
 //[[Rcpp::export]]
-Rcpp::List wsbary_cxx_armaP(const Rcpp::List weightsR,arma::mat positions1,const Rcpp::List positionssetR,const arma::mat frechet_weights,const bool fixed_support,const int maxIter,const int weights_maxIter,const int pos_maxIter ,const double stepsize,const double thresh,const bool headstart, const int headstartlength, int threads) {
+Rcpp::List wsbary_cxx_armaP(const Rcpp::List weightsR,arma::mat positions1,const Rcpp::List positionssetR,const arma::mat frechet_weights,const bool fixed_support,const int maxIter,const int weights_maxIter,const int pos_maxIter ,const double stepsize,const double thresh,bool headstart, const int headstartlength, int threads) {
   double n=weightsR.size();
   int n2=weightsR.size();
   const double m=positions1.n_rows;
@@ -133,6 +133,7 @@ Rcpp::List wsbary_cxx_armaP(const Rcpp::List weightsR,arma::mat positions1,const
           head_iter++;
         }
       }
+      headstart=FALSE;
       head_iter=0;
       //Weights Iterations
       
@@ -183,6 +184,7 @@ Rcpp::List wsbary_cxx_armaP(const Rcpp::List weightsR,arma::mat positions1,const
           head_iter++;
         }
       }
+      headstart=FALSE;
       head_iter=0;
       //Position Update Iterations
       pchange(0)=10000;
@@ -239,6 +241,7 @@ Rcpp::List wsbary_cxx_armaP(const Rcpp::List weightsR,arma::mat positions1,const
           head_iter++;
         }
       }
+      headstart=FALSE;
       head_iter=0;
       //Weights Iterations
       

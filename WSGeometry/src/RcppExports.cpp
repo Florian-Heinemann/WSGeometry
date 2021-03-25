@@ -81,7 +81,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // wsbary_cxx_armaP
-Rcpp::List wsbary_cxx_armaP(const Rcpp::List weightsR, arma::mat positions1, const Rcpp::List positionssetR, const arma::mat frechet_weights, const bool fixed_support, const int maxIter, const int weights_maxIter, const int pos_maxIter, const double stepsize, const double thresh, const bool headstart, const int headstartlength, int threads);
+Rcpp::List wsbary_cxx_armaP(const Rcpp::List weightsR, arma::mat positions1, const Rcpp::List positionssetR, const arma::mat frechet_weights, const bool fixed_support, const int maxIter, const int weights_maxIter, const int pos_maxIter, const double stepsize, const double thresh, bool headstart, const int headstartlength, int threads);
 RcppExport SEXP _WSGeometry_wsbary_cxx_armaP(SEXP weightsRSEXP, SEXP positions1SEXP, SEXP positionssetRSEXP, SEXP frechet_weightsSEXP, SEXP fixed_supportSEXP, SEXP maxIterSEXP, SEXP weights_maxIterSEXP, SEXP pos_maxIterSEXP, SEXP stepsizeSEXP, SEXP threshSEXP, SEXP headstartSEXP, SEXP headstartlengthSEXP, SEXP threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -96,7 +96,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const int >::type pos_maxIter(pos_maxIterSEXP);
     Rcpp::traits::input_parameter< const double >::type stepsize(stepsizeSEXP);
     Rcpp::traits::input_parameter< const double >::type thresh(threshSEXP);
-    Rcpp::traits::input_parameter< const bool >::type headstart(headstartSEXP);
+    Rcpp::traits::input_parameter< bool >::type headstart(headstartSEXP);
     Rcpp::traits::input_parameter< const int >::type headstartlength(headstartlengthSEXP);
     Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
     rcpp_result_gen = Rcpp::wrap(wsbary_cxx_armaP(weightsR, positions1, positionssetR, frechet_weights, fixed_support, maxIter, weights_maxIter, pos_maxIter, stepsize, thresh, headstart, headstartlength, threads));
