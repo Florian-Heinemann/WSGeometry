@@ -1,6 +1,7 @@
 Package: WSGeometry
 Type: Package
-Title: Compute Wasserstein Barycenters, Geodesics, PCA and Distances and Kantorovich-Rubinstein Distances and Barycenter
+Title: Compute Wasserstein Barycenters, Geodesics, PCA and Distances
+        and Kantorovich-Rubinstein Distances and Barycenter
 Version: 1.2
 Date: 2021-10-18
 Author: Florian Heinemann [aut, cre], Nicholas Bonneel [ctb]
@@ -8,7 +9,12 @@ Maintainer: Florian Heinemann <florian.heinemann@uni-goettingen.de>
 Description: Includes a variety of methods to compute objects related to the 'Wasserstein distance' (also known as 'Kantorovich distance' or 'Earth-Mover distance'). The main effort of this package is to allow for computations of 'Wasserstein barycenter' using regularised, unregularised and stochastic methods. It also provides convenient wrappers to call the 'transport' package with more general inputs. Handy visual tools are provided to showcase, barycenters, animations of optimal transport geodesics and animations of principal components in the 'Wasserstein space'. It also includes tools to compute Kantorovich-Rubinstein Distances and Barycenter. 
 License: GPL-3
 Encoding: UTF-8
-Imports: Rcpp, transport, RSpectra, expm, plot3D, imager, grDevices, stats, graphics, lpSolve, Matrix
+Imports: Rcpp, transport, RSpectra, expm, plot3D, imager, grDevices,
+        stats, graphics, lpSolve, Matrix
 Suggests: magick, mvtnorm, Rsymphony
 LinkingTo: RcppArmadillo, Rcpp
 RoxygenNote: 7.1.2
+NeedsCompilation: yes
+Packaged: 2021-12-06 12:35:06 UTC; FHein
+Built: R 4.1.2; x86_64-w64-mingw32; 2021-12-06 12:35:09 UTC; windows
+Archs: x64

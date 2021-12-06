@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // bary_sinkhorn_arma
 Rcpp::List bary_sinkhorn_arma(arma::mat weights, arma::mat frechet, int maxIter, double lambda, arma::mat C, double thresh, int threads);
 RcppExport SEXP _WSGeometry_bary_sinkhorn_arma(SEXP weightsSEXP, SEXP frechetSEXP, SEXP maxIterSEXP, SEXP lambdaSEXP, SEXP CSEXP, SEXP threshSEXP, SEXP threadsSEXP) {
@@ -103,6 +108,63 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// maaipm_fixed_cpp
+Rcpp::List maaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x, const arma::vec b, const arma::vec costvec, const arma::sp_mat constMat, const int N, const int m, const int M, const arma::vec sizes, const arma::vec sizescsum, const int nr, const int nc, const arma::sp_mat U, const int maxIter, const double thresh, const int threads);
+RcppExport SEXP _WSGeometry_maaipm_fixed_cpp(SEXP pSEXP, SEXP sSEXP, SEXP xSEXP, SEXP bSEXP, SEXP costvecSEXP, SEXP constMatSEXP, SEXP NSEXP, SEXP mSEXP, SEXP MSEXP, SEXP sizesSEXP, SEXP sizescsumSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP USEXP, SEXP maxIterSEXP, SEXP threshSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type p(pSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type s(sSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type b(bSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type costvec(costvecSEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat >::type constMat(constMatSEXP);
+    Rcpp::traits::input_parameter< const int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int >::type m(mSEXP);
+    Rcpp::traits::input_parameter< const int >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type sizes(sizesSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type sizescsum(sizescsumSEXP);
+    Rcpp::traits::input_parameter< const int >::type nr(nrSEXP);
+    Rcpp::traits::input_parameter< const int >::type nc(ncSEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat >::type U(USEXP);
+    Rcpp::traits::input_parameter< const int >::type maxIter(maxIterSEXP);
+    Rcpp::traits::input_parameter< const double >::type thresh(threshSEXP);
+    Rcpp::traits::input_parameter< const int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(maaipm_fixed_cpp(p, s, x, b, costvec, constMat, N, m, M, sizes, sizescsum, nr, nc, U, maxIter, thresh, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// maaipm_free_cpp
+Rcpp::List maaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x, const arma::vec b, arma::vec costvec, arma::mat support, arma::mat fullsupport, const arma::sp_mat constMat, const int N, const int m, const int M, const arma::vec sizes, const arma::vec sizescsum, const int nr, const int nc, const arma::sp_mat U, const int maxIter, const int outer_maxIter, const double thresh, const int threads);
+RcppExport SEXP _WSGeometry_maaipm_free_cpp(SEXP pSEXP, SEXP sSEXP, SEXP xSEXP, SEXP bSEXP, SEXP costvecSEXP, SEXP supportSEXP, SEXP fullsupportSEXP, SEXP constMatSEXP, SEXP NSEXP, SEXP mSEXP, SEXP MSEXP, SEXP sizesSEXP, SEXP sizescsumSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP USEXP, SEXP maxIterSEXP, SEXP outer_maxIterSEXP, SEXP threshSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type p(pSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type s(sSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type b(bSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type costvec(costvecSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type support(supportSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type fullsupport(fullsupportSEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat >::type constMat(constMatSEXP);
+    Rcpp::traits::input_parameter< const int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int >::type m(mSEXP);
+    Rcpp::traits::input_parameter< const int >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type sizes(sizesSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type sizescsum(sizescsumSEXP);
+    Rcpp::traits::input_parameter< const int >::type nr(nrSEXP);
+    Rcpp::traits::input_parameter< const int >::type nc(ncSEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat >::type U(USEXP);
+    Rcpp::traits::input_parameter< const int >::type maxIter(maxIterSEXP);
+    Rcpp::traits::input_parameter< const int >::type outer_maxIter(outer_maxIterSEXP);
+    Rcpp::traits::input_parameter< const double >::type thresh(threshSEXP);
+    Rcpp::traits::input_parameter< const int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(maaipm_free_cpp(p, s, x, b, costvec, support, fullsupport, constMat, N, m, M, sizes, sizescsum, nr, nc, U, maxIter, outer_maxIter, thresh, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
 // transport_network_dual_arma
 arma::mat transport_network_dual_arma(arma::mat a, arma::mat b, arma::mat C);
 RcppExport SEXP _WSGeometry_transport_network_dual_arma(SEXP aSEXP, SEXP bSEXP, SEXP CSEXP) {
@@ -129,6 +191,67 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// umaaipm_free_cpp
+Rcpp::List umaaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x, const arma::vec b, arma::vec costvec, arma::mat support, arma::mat fullsupport, const arma::sp_mat constMat, const int N, const int m, const int M, const arma::vec sizes, const arma::vec sizescsum, const int nr, const int nc, const arma::sp_mat U, const double C, const int maxIter, const int outer_maxIter, const double thresh, const int threads);
+RcppExport SEXP _WSGeometry_umaaipm_free_cpp(SEXP pSEXP, SEXP sSEXP, SEXP xSEXP, SEXP bSEXP, SEXP costvecSEXP, SEXP supportSEXP, SEXP fullsupportSEXP, SEXP constMatSEXP, SEXP NSEXP, SEXP mSEXP, SEXP MSEXP, SEXP sizesSEXP, SEXP sizescsumSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP USEXP, SEXP CSEXP, SEXP maxIterSEXP, SEXP outer_maxIterSEXP, SEXP threshSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type p(pSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type s(sSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type b(bSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type costvec(costvecSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type support(supportSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type fullsupport(fullsupportSEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat >::type constMat(constMatSEXP);
+    Rcpp::traits::input_parameter< const int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int >::type m(mSEXP);
+    Rcpp::traits::input_parameter< const int >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type sizes(sizesSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type sizescsum(sizescsumSEXP);
+    Rcpp::traits::input_parameter< const int >::type nr(nrSEXP);
+    Rcpp::traits::input_parameter< const int >::type nc(ncSEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat >::type U(USEXP);
+    Rcpp::traits::input_parameter< const double >::type C(CSEXP);
+    Rcpp::traits::input_parameter< const int >::type maxIter(maxIterSEXP);
+    Rcpp::traits::input_parameter< const int >::type outer_maxIter(outer_maxIterSEXP);
+    Rcpp::traits::input_parameter< const double >::type thresh(threshSEXP);
+    Rcpp::traits::input_parameter< const int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(umaaipm_free_cpp(p, s, x, b, costvec, support, fullsupport, constMat, N, m, M, sizes, sizescsum, nr, nc, U, C, maxIter, outer_maxIter, thresh, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// umaaipm_fixed_cpp
+Rcpp::List umaaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x, const arma::vec b, arma::vec costvec, arma::mat support, arma::mat fullsupport, const arma::sp_mat constMat, const int N, const int m, const int M, const arma::vec sizes, const arma::vec sizescsum, const int nr, const int nc, const arma::sp_mat U, const double C, const int maxIter, const double thresh, const int threads);
+RcppExport SEXP _WSGeometry_umaaipm_fixed_cpp(SEXP pSEXP, SEXP sSEXP, SEXP xSEXP, SEXP bSEXP, SEXP costvecSEXP, SEXP supportSEXP, SEXP fullsupportSEXP, SEXP constMatSEXP, SEXP NSEXP, SEXP mSEXP, SEXP MSEXP, SEXP sizesSEXP, SEXP sizescsumSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP USEXP, SEXP CSEXP, SEXP maxIterSEXP, SEXP threshSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type p(pSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type s(sSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type b(bSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type costvec(costvecSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type support(supportSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type fullsupport(fullsupportSEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat >::type constMat(constMatSEXP);
+    Rcpp::traits::input_parameter< const int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const int >::type m(mSEXP);
+    Rcpp::traits::input_parameter< const int >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type sizes(sizesSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type sizescsum(sizescsumSEXP);
+    Rcpp::traits::input_parameter< const int >::type nr(nrSEXP);
+    Rcpp::traits::input_parameter< const int >::type nc(ncSEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat >::type U(USEXP);
+    Rcpp::traits::input_parameter< const double >::type C(CSEXP);
+    Rcpp::traits::input_parameter< const int >::type maxIter(maxIterSEXP);
+    Rcpp::traits::input_parameter< const double >::type thresh(threshSEXP);
+    Rcpp::traits::input_parameter< const int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(umaaipm_fixed_cpp(p, s, x, b, costvec, support, fullsupport, constMat, N, m, M, sizes, sizescsum, nr, nc, U, C, maxIter, thresh, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_WSGeometry_bary_sinkhorn_arma", (DL_FUNC) &_WSGeometry_bary_sinkhorn_arma, 7},
@@ -138,8 +261,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_WSGeometry_expo", (DL_FUNC) &_WSGeometry_expo, 1},
     {"_WSGeometry_gen_cost", (DL_FUNC) &_WSGeometry_gen_cost, 2},
     {"_WSGeometry_wsbary_cxx_armaP", (DL_FUNC) &_WSGeometry_wsbary_cxx_armaP, 13},
+    {"_WSGeometry_maaipm_fixed_cpp", (DL_FUNC) &_WSGeometry_maaipm_fixed_cpp, 17},
+    {"_WSGeometry_maaipm_free_cpp", (DL_FUNC) &_WSGeometry_maaipm_free_cpp, 20},
     {"_WSGeometry_transport_network_dual_arma", (DL_FUNC) &_WSGeometry_transport_network_dual_arma, 3},
     {"_WSGeometry_transport_network_primal_arma", (DL_FUNC) &_WSGeometry_transport_network_primal_arma, 3},
+    {"_WSGeometry_umaaipm_free_cpp", (DL_FUNC) &_WSGeometry_umaaipm_free_cpp, 21},
+    {"_WSGeometry_umaaipm_fixed_cpp", (DL_FUNC) &_WSGeometry_umaaipm_fixed_cpp, 20},
     {NULL, NULL, 0}
 };
 

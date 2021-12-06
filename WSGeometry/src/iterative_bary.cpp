@@ -22,7 +22,8 @@ double rand_cxx(){
 //[[Rcpp::export]]
 int index_cxx(arma::mat x,double y){
   arma::mat sum_vec=arma::cumsum(x)*(1/arma::sum(x))-y;
-  const arma::Mat<unsigned int> ind_vec=find(sum_vec >= 0,1,"first");
+  //const arma::Mat<unsigned int> ind_vec=find(sum_vec >= 0,1,"first");
+  arma::uvec ind_vec=find(sum_vec >= 0,1,"first");
   //arma::colvec ind  =find(vec > 0,0,"first").;
   //arma::mat ind=find(vec>0,0,"first");
   return(ind_vec(0));

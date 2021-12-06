@@ -31,6 +31,13 @@
 #' @export
 
 barycenter_lp<-function(pos.list,weights.list,frechet.weights=NULL){
+  if (!requireNamespace("Rsymphony", quietly = TRUE)) {
+    warning("Package Rsymphony not detected: Please install Rsymphony for optimal performance if you are not using a Mac.")
+    Rsym<-FALSE
+  }
+  else{
+    Rsym<-TRUE
+  }
   d<-dim(pos.list[[1]])[2]
   sizes<-unlist(lapply(weights.list,length))
   const<-(gen_constraints_multi(sizes))
@@ -50,7 +57,13 @@ barycenter_lp<-function(pos.list,weights.list,frechet.weights=NULL){
     mat<-pos.full[bol_const[,k],]
     cost<-c(cost,euclid_bary_func_w(mat,frechet.weights))
   }
-  out<-Rsymphony::Rsymphony_solve_LP(obj=cost,mat=const,dir=rep("==",length(rhs)),rhs=rhs,max=FALSE)
+  if (Rsym){
+    out<-Rsymphony::Rsymphony_solve_LP(obj=cost,mat=const,dir=rep("==",length(rhs)),rhs=rhs,max=FALSE)
+  }
+  else{
+    out<-lpSolve::lp("min",cost,const,rep("==",length(rhs)),rhs)
+  }
+
   inds<-out$solution>0
   A.sub<-const[,inds]
   out.pos<-matrix(0,0,d)

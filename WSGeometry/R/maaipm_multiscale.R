@@ -1,0 +1,28 @@
+ws_multi_scale_bary<-function(pos.list,weights.list,start.grid=c(8,8),scales,zerothresh=10^-1,maxIter=100,startvec=NULL,thresh=10^-6,threads=1){
+  support<-t(grid_positions(start.grid[1],start.grid[2]))
+  count<-1
+  scalebary<-maaipm_fixed_wrap(pos.list,weights.list,support,maxIter,startvec,thresh)
+  L<-length(scalebary)
+  scaleweights<-scalebary
+  bary.mat<-matrix(scaleweights,start.grid[1],start.grid[2])
+  bary.mat<-refine_grid(bary.mat)
+  bary.mat.bool<-bary.mat>zerothresh
+  bary.mat[!bary.mat.bool]<-0
+  support<-t(grid_positions(start.grid[1]*(2^(count)),start.grid[2]*(2^(count))))
+  support<-support[,bary.mat.bool]
+  for (scale in 1:scales){
+    scalebary<-maaipm_fixed_wrap(pos.list,weights.list,support,maxIter,startvec,thresh)
+    L<-length(scalebary)
+    scaleweights<-scalebary
+    bary.mat[bary.mat.bool]<-scaleweights
+    bary.mat.save<-bary.mat
+    bary.mat<-refine_grid(bary.mat)
+    bary.mat.bool<-bary.mat>zerothresh
+    bary.mat[!bary.mat.bool]<-0
+    support.save<-support
+    support<-t(grid_positions(start.grid[1]*(2^(count+1)),start.grid[2]*(2^(count+1))))
+    support<-support[,bary.mat.bool]
+    count<-count+1
+  }
+  return(list(positions=support.save,weights=scaleweights,matrix=bary.mat.save))
+}

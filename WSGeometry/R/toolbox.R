@@ -145,7 +145,7 @@ type_check<-function(object){
       if (!((class(object)[1])=="wpp")){
         if (!is.matrix(object)){
           if (!((is.character(object))&(length(object)=1))){
-            return("you should not do that")
+            return("Input type not supported!")
           }
           else{
             return("image_file")
@@ -220,6 +220,7 @@ select_costInds<-function(A,col,sizes){
   inds<-inds[inds>0]
   return(inds)
 }
+
 
 build_MM_costvec<-function(costA,A){
   D<-dim(costA)
@@ -365,3 +366,108 @@ sqrtm_transform<-function(A,B){
   return(tmp)
 }
 
+
+extend_positions<-function(pos){
+  d<-dim(pos)[1]
+  return(cbind(pos,rep(10^14,d)))
+}
+newpgen_cost<-function(mat1,mat2,C){
+  costM<-t(gen_cost(t(mat1),t(mat2)))
+  costM[costM>10^14]<-C^2/2
+  return(costM)
+}
+sqnorm<-function(x){
+  return(sqrt(sum(x^2)))
+}
+
+
+
+build_U<-function(N,m){
+  rows<-c(1:(N-1),1:N)
+  cols<-c(1:(N-1),rep(N,N))
+  val<-rep(1,2*N-1)
+  tmp1<-sparseMatrix(rows,cols,x=val)
+  tmp2<-sparseMatrix(1:(m-1),1:(m-1),x=rep(1,m-1))
+  return(kronecker(tmp1,tmp2))
+}
+
+
+build_const<-function(m,sizes){
+  N<-length(sizes)
+  sizes_csum<-c(0,cumsum(sizes))
+  M<-sum(sizes)
+  n_row<-M+N*(m-1)+1
+  n_col<-(M+1)*m
+  Mm<-M*m
+  
+  row1<-kronecker(1:M,rep(1,m))
+  row2<-rep(0,M*(m-1))
+  for (i in 1:N){
+    index<-(sizes_csum[i]*(m-1)+1):(sizes_csum[i+1]*(m-1))
+    row2[index]<-kronecker(rep(1,sizes[i]),(M+(i-1)*(m-1)+1):(M+i*(m-1)))
+  }
+  row3<-n_row*rep(1,m)
+  row<-c(row1,row2,row3)
+  
+  #build col inds
+  col1<-1:Mm
+  col2<-(1:Mm)-kronecker((m*(1:M)+1-m),c(1,rep(0,m-1)))
+  col2<-col2[col2>0]
+  col3<-(n_col-m+1):n_col
+  col<-c(col1,col2,col3)
+  val<-rep(1,Mm+M*(m-1)+m)
+  const<-sparseMatrix(row,col,x=val)
+  const[(M+1): (M+N*(m-1)), (n_col -m+2) : n_col]<-kronecker(rep(1,N),sparseMatrix(1:(m-1),1:(m-1),x=rep(-1,m-1)))
+  return(const)
+}
+
+
+probm<-function(x){
+  return(x/sum(x))
+}
+
+
+refine_grid<-function(current.grid){
+  current.size<-dim(current.grid)[1]
+  ind.vec<-rep(1:current.size,rep(2,current.size))
+  new.grid<-current.grid[,ind.vec]
+  new.grid<-new.grid[ind.vec,]/4
+  return(new.grid)
+}
+
+process_data_unb<-function(object,type,return_type="weighted point pattern"){
+  if (type=="image_file"){
+    I<-imager::load.image(object)
+    I<-imager::grayscale(I)
+    d<-(attributes(I)$dim)[1:2]
+    IM<-I[1:d[1],1:d[2],1,1]
+    object<-IM
+    type<-"image_mat"
+  }
+  if ((!(return_type==type))&(type=="image_mat")){
+    d<-dim(object)
+    G<-grid_positions(d[1],d[2])
+    W<-as.vector(object)
+    G<-G[W>0,]
+    W<-W[W>0]
+    object<-list(positions=G,weights=W)
+    type<-"weighted point pattern"
+  }
+  if ((!(return_type==type))&(type=="wpp")){
+    object<-list(positions=object$coordinates,weights=as.vector(object$mass))
+    type<-"weighted point pattern"
+  }
+  if ((!(return_type==type))&(type=="point pattern")){
+    M<-dim(object[[1]])[1]
+    object<-list(positions=object[[1]],weights=rep(1,M))
+    type<-"weighted point pattern"
+  }
+  if (type=="weighted point pattern"){
+    object<-list(positions=object$positions,weights=object$weights)
+    return(object)
+  }
+  if (type==return_type){
+    return(object)
+  }
+  return(list(positions=NaN,weights=NaN))
+}

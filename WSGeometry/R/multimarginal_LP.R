@@ -12,11 +12,23 @@
 #' @export
 
 multi_marginal<-function(weights,costA){
+  if (!requireNamespace("Rsymphony", quietly = TRUE)) {
+    warning("Package Rsymphony not detected: Please install Rsymphony for optimal performance if you are not using a Mac.")
+    Rsym<-FALSE
+  }
+  else{
+    Rsym<-TRUE
+  }
   D<-dim(costA)
   const<-gen_constraints_multi(D)
   costVec<-build_MM_costvec(costA,const)
   rhs<-unlist(weights)
-  out<-Rsymphony::Rsymphony_solve_LP(obj=costVec,mat=const,dir=rep("==",sum(D)),rhs=rep(1,sum(D)),max=FALSE)
+  if (Rsym){
+    out<-Rsymphony::Rsymphony_solve_LP(obj=costVec,mat=const,dir=rep("==",sum(D)),rhs=rhs,max=FALSE)
+  }
+  else{
+    out<-lpSolve::lp("min",costVec,const,rep("==",sum(D)),rhs)
+  }
   optMMCoupling<-build_MMCoupling(out,const,D)
   return(list(MMCoupling=optMMCoupling,cost=out$objval))
 }

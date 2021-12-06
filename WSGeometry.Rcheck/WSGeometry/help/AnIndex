@@ -1,0 +1,15 @@
+barycenter_lp	barycenter_lp
+bin2d	bin2d
+frechet_func	frechet_func
+geodesic_pos	geodesic_pos
+grid_positions	grid_positions
+kr_bary	kr_bary
+kr_dist	kr_dist
+location_scatter_bary	location_scatter_bary
+multi_marginal	multi_marginal
+plotGeodesic	plotGeodesic
+smear	smear
+wasserstein_bary	wasserstein_bary
+ws_bary_maaipm	ws_bary_maaipm
+ws_dist	ws_dist
+ws_logpca	ws_logpca
