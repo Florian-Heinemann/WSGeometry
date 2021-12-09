@@ -17,7 +17,7 @@
 #' wpp1<-transport::wpp(pos1,W1)
 #' wpp2<-transport::wpp(pos2,W2)
 #' system.time(res<-WSGeometry:::kr_dist(wpp1,wpp2,2,2))
-#' @references Kantorovich-Rubinstein distance and barycenter for finitely supported measures:  Foundations and Algorithms; Florian Heinemann, Marcel Klatt, Axel Munk
+#' @references Kantorovich-Rubinstein distance and barycenter for finitely supported measures:  Foundations and Algorithms; Florian Heinemann, Marcel Klatt, Axel Munk; https://arxiv.org/pdf/2112.03581.pdf.
 #' @export
 kr_dist<-function(A,B,p=2,C){
   Atype<-type_check(A)

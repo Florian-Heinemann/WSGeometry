@@ -149,7 +149,7 @@
 #' Iterative Bregman projections for regularized transportation problems. SIAM Journal on Scientific Computing 37(2):A1111-A1138. \cr
 #' M Cuturi and A Doucet (2014). Fast Computation of Wasserstein Barycenters. Proceedings of the 31st International Conference on Machine Learning, PMLR 32(2):685-693. \cr
 #' F Heinemann, A Munk, and Y Zemel (2020). Randomised Wasserstein barycenter computation: Resampling with statistical guarantees. arXiv preprint.\cr
-#' N. Bonneel (2018). Fast Network Simplex for Optimal Transport. Github repository, nbonneel/network_simplex. \cr
+#' N. Bonneel (2018). Fast Network Simplex for Optimal Transport. \cr Github repository, nbonneel/network_simplex. \cr
 #' N. Bonneel, M. van de Panne, S. Paris and W. Heidrich (2011). Displacement interpolation using Lagrangian mass transport. ACM Transactions on Graphics (SIGGRAPH ASIA 2011) 30(6).
 #'@export
 wasserstein_bary<-function(data.list,frechet.weights=NULL,method="alternating",return_type="wpp",supp.size=NULL,

@@ -48,7 +48,8 @@
 #' ## so this had to be disabled.
 #' plotGeodesic(Geo,File="TestGeodesicDefault",images=FALSE,gif=FALSE)
 #' plotGeodesic(Geo,method="bin",File="TestGeodesicDefaultBin",images=FALSE,gif=FALSE)
-#' plotGeodesic(Geo,method="binSplit",File="TestGeodesicDefaultBinSPlit",images=FALSE,gif=FALSE)
+#' plotGeodesic(Geo,method="binSplit",File="TestGeodesicDefaultBinSPlit",
+#' images=FALSE,gif=FALSE)
 #' \donttest{
 #' #3D-Example:
 #' #Functions to build the example measures

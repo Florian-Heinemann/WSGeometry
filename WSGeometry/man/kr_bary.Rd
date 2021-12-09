@@ -2,7 +2,7 @@
 % Please edit documentation in R/unbalanced_barycenter.R
 \name{kr_bary}
 \alias{kr_bary}
-\title{Solves the (2,C)-Barycenter problem between N measures of possibly unequal mass on R^d.}
+\title{Solves the (2,C)-Barycenter problem between N measures of possibly unequal total mass on R^d.}
 \usage{
 kr_bary(
   data.list,
@@ -117,5 +117,5 @@ plot(bary.free)
 \references{
 Ge, DongDong, et al. "Interior-Point Methods Strike Back: Solving the Wasserstein Barycenter Problem." 
 Advances in Neural Information Processing Systems 32 (2019): 6894-6905.
-Kantorovich-Rubinstein distance and barycenter for finitely supported measures: Foundations and Algorithms; Heinemann, Klatt and Munk.
+Kantorovich-Rubinstein distance and barycenter for finitely supported measures: Foundations and Algorithms; Heinemann, Klatt and Munk; https://arxiv.org/pdf/2112.03581.pdf.
 }

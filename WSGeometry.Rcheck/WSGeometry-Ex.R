@@ -92,7 +92,7 @@ flush(stderr()); flush(stdout())
 base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### Name: kr_bary
 ### Title: Solves the (2,C)-Barycenter problem between N measures of
-###   possibly unequal mass on R^d.
+###   possibly unequal total mass on R^d.
 ### Aliases: kr_bary
 
 ### ** Examples
@@ -299,7 +299,8 @@ Geo<-geodesic_pos(data.list[[1]],data.list[[2]],2,seq(0,1,0.1))
 ## so this had to be disabled.
 plotGeodesic(Geo,File="TestGeodesicDefault",images=FALSE,gif=FALSE)
 plotGeodesic(Geo,method="bin",File="TestGeodesicDefaultBin",images=FALSE,gif=FALSE)
-plotGeodesic(Geo,method="binSplit",File="TestGeodesicDefaultBinSPlit",images=FALSE,gif=FALSE)
+plotGeodesic(Geo,method="binSplit",File="TestGeodesicDefaultBinSPlit",
+images=FALSE,gif=FALSE)
 ## No test: 
 #3D-Example:
 #Functions to build the example measures

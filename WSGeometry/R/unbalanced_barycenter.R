@@ -1,4 +1,4 @@
-#' Solves the (2,C)-Barycenter problem between N measures of possibly unequal mass on R^d.
+#' Solves the (2,C)-Barycenter problem between N measures of possibly unequal total mass on R^d.
 #' @description This is a wrapper function for multiple methods to solve the (2,C)-barycenter problem. It 
 #' contains three methods:
 #' "fixed": This function finds the best approximation of the (2,C)-barycenter problem of N finitely supported input
@@ -84,7 +84,7 @@
 #' 
 #' @references Ge, DongDong, et al. "Interior-Point Methods Strike Back: Solving the Wasserstein Barycenter Problem." 
 #' Advances in Neural Information Processing Systems 32 (2019): 6894-6905.
-#' Kantorovich-Rubinstein distance and barycenter for finitely supported measures: Foundations and Algorithms; Heinemann, Klatt and Munk. 
+#' Kantorovich-Rubinstein distance and barycenter for finitely supported measures: Foundations and Algorithms; Heinemann, Klatt and Munk; https://arxiv.org/pdf/2112.03581.pdf. 
 #' @export
 kr_bary<-function(data.list,C,method="fixed",support,wmaxIter,pmaxIter,return_type="default",thresh=10^-3,threads=1){
   N<-length(data.list)

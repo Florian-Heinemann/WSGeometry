@@ -80,7 +80,7 @@
 #' 
 #' @references Ge, DongDong, et al. "Interior-Point Methods Strike Back: Solving the Wasserstein Barycenter Problem." 
 #' Advances in Neural Information Processing Systems 32 (2019): 6894-6905.
-#' Kantorovich-Rubinstein distance and barycenter for finitely supported measures:  Foundations and Algorithms; Heinemann, Klatt and Munk. 
+#' Kantorovich-Rubinstein distance and barycenter for finitely supported measures: Foundations and Algorithms; Heinemann, Klatt and Munk; https://arxiv.org/pdf/2112.03581.pdf. 
 #' @export
 ws_bary_maaipm<-function(data.list,method="fixed",support,wmaxIter,pmaxIter,return_type="default",thresh=10^-3,threads=1){
   N<-length(data.list)

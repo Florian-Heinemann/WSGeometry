@@ -111,7 +111,7 @@ Type 'q()' to quit R.
 > base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: kr_bary
 > ### Title: Solves the (2,C)-Barycenter problem between N measures of
-> ###   possibly unequal mass on R^d.
+> ###   possibly unequal total mass on R^d.
 > ### Aliases: kr_bary
 > 
 > ### ** Examples
@@ -144,19 +144,19 @@ Type 'q()' to quit R.
 > system.time(bary.ms<-WSGeometry::kr_bary(data.list,C,method="multiscale",
 + support=c(8,8,3,10^-2),wmaxIter=100,return_type="mat",thresh=6*10^-4,threads=1))
    user  system elapsed 
-   1.17    0.08    1.25 
+   1.20    0.04    1.25 
 > #Using the fixed support method
 > support<-t(WSGeometry::grid_positions(20,20))
 > system.time(bary.fixed<-WSGeometry::kr_bary(data.list,C,method="fixed",
 + support=support,wmaxIter=100,return_type="wpp",thresh=6*10^-4,threads=1))
    user  system elapsed 
-   4.86    0.09    4.97 
+   5.01    0.14    5.17 
 > #Using the free support method
 > support<-t(WSGeometry::grid_positions(8,8))
 > system.time(bary.free<-WSGeometry::kr_bary(data.list,C,method="free",
 + support=support,wmaxIter=100,pmaxIter=25,return_type="wpp",thresh=8*10^-4,threads=1))
    user  system elapsed 
-   1.24    0.28    1.53 
+   1.22    0.36    1.61 
 > 
 > #The outputs can be conveniently visualised using the image function for the "mat" output
 > #and the plot-method for the wpp-objects provided by the transport package.
@@ -192,7 +192,7 @@ Type 'q()' to quit R.
 > wpp2<-transport::wpp(pos2,W2)
 > system.time(res<-WSGeometry:::kr_dist(wpp1,wpp2,2,2))
    user  system elapsed 
-   0.17    0.03    0.21 
+   0.15    0.07    0.22 
 > 
 > 
 > 
@@ -326,7 +326,8 @@ Type 'q()' to quit R.
 > ## so this had to be disabled.
 > plotGeodesic(Geo,File="TestGeodesicDefault",images=FALSE,gif=FALSE)
 > plotGeodesic(Geo,method="bin",File="TestGeodesicDefaultBin",images=FALSE,gif=FALSE)
-> plotGeodesic(Geo,method="binSplit",File="TestGeodesicDefaultBinSPlit",images=FALSE,gif=FALSE)
+> plotGeodesic(Geo,method="binSplit",File="TestGeodesicDefaultBinSPlit",
++ images=FALSE,gif=FALSE)
 > ## No test: 
 > #3D-Example:
 > #Functions to build the example measures
@@ -441,27 +442,27 @@ detaching 'package:transport'
 > 
 > system.time(res1<-wasserstein_bary(data.list,return_type = "wpp",method="lp"))
    user  system elapsed 
-   0.19    0.00    0.19 
+   0.18    0.01    0.19 
 > frechet_func(res1,data.list)
 [1] 0.04609785
 > ## No test: 
 > system.time(res2<-wasserstein_bary(data.list,return_type = "wpp",method="alternating",
 + supp.size = M*N-N+1,warmstartlength = 3,pos_maxIter = 100,weights_maxIter = 100))
    user  system elapsed 
-   1.19    1.28    2.47 
+   1.27    1.24    2.51 
 > frechet_func(res2,data.list)
 [1] 0.04703198
 > ## End(No test)
 > system.time(res3<-wasserstein_bary(data.list,return_type = "wpp",
 + method="fixed_support",warmstartlength = 3,weights_maxIter = 100,output.supp = res1$coordinates))
    user  system elapsed 
-   0.76    0.50    1.28 
+   0.66    0.65    1.31 
 > frechet_func(res3,data.list)
 [1] 0.04640091
 > system.time(res4<-wasserstein_bary(data.list,return_type = "wpp",
 + method="sampling",sample.size=8,warmstartlength = 3,pos_maxIter = 100))
    user  system elapsed 
-   0.02    0.03    0.05 
+   0.00    0.07    0.06 
 > frechet_func(res4,data.list)
 [1] 0.05962321
 > ## No test: 
@@ -493,30 +494,30 @@ detaching 'package:transport'
 > system.time(res1<-wasserstein_bary(data.list,return_type = "wpp",method="alternating"
 + ,supp.size = supp.size,warmstartlength = 0,pos_maxIter = 10,weights_maxIter = 10,maxIter = 10))
    user  system elapsed 
-  10.52    8.64   19.21 
+  11.00    8.59   19.67 
 > plot(res1)
 > system.time(res2<-wasserstein_bary(data.list,return_type = "wpp",
 + method="fixed_support",warmstartlength = 0,weights_maxIter = 50,maxIter=1,
 + output.supp = grid_positions(2*L,2*L)))
    user  system elapsed 
-   8.03    6.44   14.48 
+   8.52    6.31   14.84 
 > plot(res2)
 > system.time(res3<-wasserstein_bary(data.list,return_type = "wpp",method="sampling",
 + sample.size=400,warmstartlength = 0,pos_maxIter = 100,stepsize = 1,maxIter=1))
    user  system elapsed 
-   0.67    0.48    1.16 
+   0.61    0.58    1.18 
 > plot(res3)
 > 
 > system.time(res4<-wasserstein_bary(image.list,return_type = "wpp",
 + method="regular",stepsize = 1,weights_maxIter = 50))
    user  system elapsed 
-   0.27    0.00    0.27 
+   0.27    0.02    0.28 
 > plot(res4)
 > system.time(res5<-wasserstein_bary(image.list,return_type = "wpp",
 + method="fixed_support",shared=TRUE,warmstartlength = 0,weights_maxIter = 50,maxIter=1,
 + output.supp = grid_positions(2*L,2*L)))
    user  system elapsed 
-  15.84   11.16   27.21 
+  19.08   11.61   30.72 
 > plot(res5)
 > ## End(No test)
 > 
@@ -564,19 +565,19 @@ detaching 'package:transport'
 > system.time(bary.ms<-WSGeometry::ws_bary_maaipm(data.list,method="multiscale",
 + support=c(8,8,3,10^-4),wmaxIter=100,return_type="mat",thresh=6*10^-4,threads=1))
    user  system elapsed 
-   0.95    0.06    1.01 
+   1.04    0.07    1.13 
 > #Using the fixed support method
 > support<-t(WSGeometry::grid_positions(20,20))
 > system.time(bary.fixed<-WSGeometry::ws_bary_maaipm(data.list,method="fixed",
 + support=support,wmaxIter=100,return_type="wpp",thresh=6*10^-4,threads=1))
    user  system elapsed 
-   2.38    0.10    2.47 
+   2.42    0.08    2.50 
 > #Using the free support method
 > support<-t(WSGeometry::grid_positions(8,8))
 > system.time(bary.free<-WSGeometry::ws_bary_maaipm(data.list,method="free",
 + support=support,wmaxIter=100,pmaxIter=25,return_type="wpp",thresh=6*10^-4,threads=1))
    user  system elapsed 
-   0.94    0.03    0.97 
+   1.19    0.06    1.25 
 > 
 > #The outputs can be conveniently visualised using the image function for the "mat" output
 > #and the plot-method for the wpp-objects provided by the transport package.
@@ -666,7 +667,7 @@ detaching 'package:transport'
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  53.84 30.22 84.44 NA NA 
+Time elapsed:  58.77 30.76 89.72 NA NA 
 > grDevices::dev.off()
 null device 
           1 

@@ -6,7 +6,7 @@ frechet_func            Compute the Frechet functional/The objective
 geodesic_pos            Compute Wasserstein geodesics
 grid_positions          Generate a 2d grid in [0,1]^2 of given size.
 kr_bary                 Solves the (2,C)-Barycenter problem between N
-                        measures of possibly unequal mass on R^d.
+                        measures of possibly unequal total mass on R^d.
 kr_dist                 Compute the p-Kantorovich-Rubinstein distance
                         between two measures of possibly unequal total
                         mass.

@@ -111,5 +111,5 @@ plot(bary.free)
 \references{
 Ge, DongDong, et al. "Interior-Point Methods Strike Back: Solving the Wasserstein Barycenter Problem." 
 Advances in Neural Information Processing Systems 32 (2019): 6894-6905.
-Kantorovich-Rubinstein distance and barycenter for finitely supported measures:  Foundations and Algorithms; Heinemann, Klatt and Munk.
+Kantorovich-Rubinstein distance and barycenter for finitely supported measures: Foundations and Algorithms; Heinemann, Klatt and Munk; https://arxiv.org/pdf/2112.03581.pdf.
 }
