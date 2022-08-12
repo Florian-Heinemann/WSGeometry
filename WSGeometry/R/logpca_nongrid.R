@@ -33,7 +33,7 @@
 #'   pos<-pos+1
 #'   pos<-pos/2
 #'   W<-rep(1/supp.size,supp.size)
-#'   data.list[[i]]<-transport::wpp(pos,W)
+#'   data.list[[i]]<-wpp(pos,W)
 #' }
 #' 
 #' res1<-wasserstein_bary(data.list,return_type = "wpp",method="alternating",
@@ -51,13 +51,19 @@
 #' in the Wasserstein space. SIAM Journal on Scientific Computing 40(2):B429–B456. \cr
 #' W Wei, D Slepcev, S Basu, JA Ozolek, and GK Rohde (2013). A Linear Optimal Transportation Framework for Quantifying and Visualizing Variations in Sets of Images. International Journal of Computer Vision 101(2):254-269.
 ws_logpca<-function(data.list,barycenter,pca.count,steps_number=21){
+  if (!requireNamespace("transport", quietly = TRUE)) {
+    stop("This method requires transport to run. Please install it to use this function,")
+  }
+  if (!requireNamespace("RSpectra", quietly = TRUE)) {
+    stop("This method requires RSpectra to run. Please install it to use this function,")
+  }
   N<-length(data.list)
   data.types<-lapply(data.list,type_check)
   data.list<-mapply(process_data,data.list,data.types,SIMPLIFY = FALSE)
-  data.wpp<-mapply(transport::wpp,lapply(data.list,"[[",1),lapply(data.list,"[[",2),SIMPLIFY = FALSE)
+  data.wpp<-mapply(wpp,lapply(data.list,"[[",1),lapply(data.list,"[[",2),SIMPLIFY = FALSE)
   type<-type_check(barycenter)
   bary<-process_data(barycenter,type)
-  bary<-transport::wpp(bary$positions,bary$weights)
+  bary<-wpp(bary$positions,bary$weights)
   P<-lapply(data.wpp,transport::transport,a=bary,method="networkflow",fullreturn=TRUE)
   P<-lapply(P,"[[",2)
   V<-mapply(bary_proj,lapply(data.list,"[[",1),P,MoreArgs = list(bary=bary$mass),SIMPLIFY=FALSE)
@@ -81,7 +87,7 @@ ws_logpca<-function(data.list,barycenter,pca.count,steps_number=21){
     sub.list<-vector("list",steps_number)
     V<-PC[[k]]
     for (i in 1:steps_number){
-      sub.list[[i]]<-transport::wpp(bary$coordinates+(V*steps[i]),bary$mass)
+      sub.list[[i]]<-wpp(bary$coordinates+(V*steps[i]),bary$mass)
     }
     out.list[[k]]<-sub.list
   }

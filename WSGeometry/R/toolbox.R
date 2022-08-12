@@ -170,6 +170,9 @@ type_check<-function(object){
 ####Convert types of data 
 process_data<-function(object,type,return_type="weighted point pattern"){
   if (type=="image_file"){
+    if (!requireNamespace("imager", quietly = TRUE)) {
+      stop("The package imager is required to use images as input measures. Please install it to use this functionality.")
+    }
     I<-imager::load.image(object)
     I<-imager::grayscale(I)
     d<-(attributes(I)$dim)[1:2]
@@ -249,7 +252,7 @@ build_MMCoupling<-function(optSol,A,D){
 
 
 
-
+#Generate numbering ordered accordingly for gif-generation.
 numbering_gen<-function(N){
   pot<-0
   check<-FALSE
@@ -276,7 +279,7 @@ numbering_gen<-function(N){
   
   return(strings[N:1])
 }
-
+#generate string of zeros of given length
 gen_zero_string<-function(n){
   if (n==0){
     return("")
@@ -287,7 +290,7 @@ gen_zero_string<-function(n){
   }
   return(out.string)
 }
-
+#Rotate a 3D point pattern along a certain axis for a given angle.
 rotate3D<-function(pos,axis,angle){
   R<-matrix(0,3,3)
   R[1]<-cos(angle)+axis[1]^2*(1-cos(angle))
@@ -301,7 +304,7 @@ rotate3D<-function(pos,axis,angle){
   R[9]<-cos(angle)+axis[3]^2*(1-cos(angle))
   return(t(diag(c(2,3,1))%*%(R%*%t(pos))))
 }
-
+#Generate a Torus in 3D.
 gen_torus<-function(M,R,r){
   theta<-seq(0,2*pi,length.out=M)
   phi<-seq(0,2*pi,length.out=M)
@@ -311,7 +314,7 @@ gen_torus<-function(M,R,r){
   z<-r*sin(G[,1])
   return(cbind(x,y,z))
 }
-
+#Generate a pentagonal prism in 3D.
 draw3Dpentagon<-function(M,G){
   c1<-cos(2*pi/5)
   c2<-cos(pi/5)
@@ -343,55 +346,62 @@ draw3Dpentagon<-function(M,G){
   }
   return(penta3)
 }
+#Euclidean Norm of a vector.
 sq_norm<-function(v){
   return(sqrt(sum(v^2)))
 }
+#Set a vector to unit norm (Euclidean)
 normalize<-function(v){
   return(v/(sq_norm(v)))
 }
-
+#Perform barycentric coordinate projection.
 bary_proj<-function(pos,bary,P){
   D<-sqrt(diag(bary^(-1)))
   D[D==Inf]<-0
   V<-D%*%(P)%*%pos
   return(V)
 }
+#Compute Covariance Matrix for PCA
 cov_mat<-function(data,mean){
   out<-(data-mean)%*%t(data-mean)
   return(out)
 }
-
+#Matrix squareroot transform for PCA.
 sqrtm_transform<-function(A,B){
+  if (!requireNamespace("expm", quietly = TRUE)) {
+    stop("The package expm is required for this method. Please install it to use this function.")
+  }
   tmp<-expm::sqrtm(B%*%A%*%B)
   return(tmp)
 }
 
-
+#Add Dummy point for augmented problem.
 extend_positions<-function(pos){
   d<-dim(pos)[1]
   return(cbind(pos,rep(10^14,d)))
 }
+#Compute cost vor augmented problem.
 newpgen_cost<-function(mat1,mat2,C){
   costM<-t(gen_cost(t(mat1),t(mat2)))
   costM[costM>10^14]<-C^2/2
   return(costM)
 }
+#Compute Euclidean Norm of a Vector
 sqnorm<-function(x){
   return(sqrt(sum(x^2)))
 }
 
-
-
+#Build Matrix for MAAIPM
 build_U<-function(N,m){
   rows<-c(1:(N-1),1:N)
   cols<-c(1:(N-1),rep(N,N))
   val<-rep(1,2*N-1)
-  tmp1<-sparseMatrix(rows,cols,x=val)
-  tmp2<-sparseMatrix(1:(m-1),1:(m-1),x=rep(1,m-1))
+  tmp1<-Matrix::sparseMatrix(rows,cols,x=val)
+  tmp2<-Matrix::sparseMatrix(1:(m-1),1:(m-1),x=rep(1,m-1))
   return(kronecker(tmp1,tmp2))
 }
 
-
+#Build Constraint Matrix
 build_const<-function(m,sizes){
   N<-length(sizes)
   sizes_csum<-c(0,cumsum(sizes))
@@ -416,17 +426,17 @@ build_const<-function(m,sizes){
   col3<-(n_col-m+1):n_col
   col<-c(col1,col2,col3)
   val<-rep(1,Mm+M*(m-1)+m)
-  const<-sparseMatrix(row,col,x=val)
-  const[(M+1): (M+N*(m-1)), (n_col -m+2) : n_col]<-kronecker(rep(1,N),sparseMatrix(1:(m-1),1:(m-1),x=rep(-1,m-1)))
+  const<-Matrix::sparseMatrix(row,col,x=val)
+  const[(M+1): (M+N*(m-1)), (n_col -m+2) : n_col]<-kronecker(rep(1,N),Matrix::sparseMatrix(1:(m-1),1:(m-1),x=rep(-1,m-1)))
   return(const)
 }
 
-
+#Normalise measure
 probm<-function(x){
   return(x/sum(x))
 }
 
-
+#Refine grid for multiscale approach
 refine_grid<-function(current.grid){
   current.size<-dim(current.grid)[1]
   ind.vec<-rep(1:current.size,rep(2,current.size))
@@ -434,9 +444,12 @@ refine_grid<-function(current.grid){
   new.grid<-new.grid[ind.vec,]/4
   return(new.grid)
 }
-
+#convert data types for measures which are not probability measures.
 process_data_unb<-function(object,type,return_type="weighted point pattern"){
   if (type=="image_file"){
+    if (!requireNamespace("imager", quietly = TRUE)) {
+      stop("The package imager is required to use images as input measures. Please install it to use this functionality.")
+    }
     I<-imager::load.image(object)
     I<-imager::grayscale(I)
     d<-(attributes(I)$dim)[1:2]
@@ -455,6 +468,9 @@ process_data_unb<-function(object,type,return_type="weighted point pattern"){
   }
   if ((!(return_type==type))&(type=="wpp")){
     object<-list(positions=object$coordinates,weights=as.vector(object$mass))
+    if (length(object$weights)==0){
+      object<-list(positions=matrix(0,1,2),weights=10^-14)
+    }
     type<-"weighted point pattern"
   }
   if ((!(return_type==type))&(type=="point pattern")){
@@ -470,4 +486,191 @@ process_data_unb<-function(object,type,return_type="weighted point pattern"){
     return(object)
   }
   return(list(positions=NaN,weights=NaN))
+}
+
+# altwpp<-function (coordinates, mass,dir="row") {
+#   if (dir=="row"){
+#     d<-dim(coordinates)[2]
+#   }
+#   if (dir=="col"){
+#     d<-dim(coordinates)[1]
+#   }
+#   massnonzero<-mass>0
+#   mass <- mass[massnonzero]
+#   N<-length(mass)
+#   if (N>1){
+#     if (dir=="row"){
+#       coordinates <- coordinates[massnonzero, ]
+#     }
+#     if (dir=="col"){
+#       coordinates <- coordinates[ ,massnonzero]
+#     }
+#   }
+#   if (N==1){
+#     if (dir=="row"){
+#       coordinates <- matrix(coordinates[massnonzero, ],1,d)
+#     }
+#     if (dir=="col"){
+#       coordinates <- matrix(coordinates[massnonzero, ],d,1)
+#     }
+#   }
+#   if (N==0){
+#     if (is.null(d)){
+#       d<-2
+#     }
+#     if (dir=="row"){
+#       coordinates <- matrix(0,1,d)
+#     }
+#     if (dir=="col"){
+#       coordinates <- matrix(0,d,1)
+#     }
+#   }
+#   totmass<-sum(mass)
+#   res <- list(dimension = d, N = N, coordinates = coordinates, 
+#               mass = mass, totmass = totmass,dir=dir)
+#   class(res) <- "wpp"
+#   return(res)
+# }
+
+# print.wpp <- function(x, ...) {
+#   stopifnot(class(x) == "wpp")
+#   cat("Pattern of ",x$N," points in ",x$dimension, " dimensions with total mass ", x$totmass,".\n", sep="")
+#   if (x$dir=="row"){
+#     cat("Minimal coordinates:", apply(x$coordinates,2,min), "\n")
+#     cat("Maximal coordinates:", apply(x$coordinates,2,max), "\n")
+#   }
+#   if (x$dir=="col"){
+#     cat("Minimal coordinates:", apply(x$coordinates,1,min), "\n")
+#     cat("Maximal coordinates:", apply(x$coordinates,1,max), "\n")
+#   }
+#   
+#   invisible(x)
+# }
+
+#Sampling method for randomised UOT computations.
+multinomial_sampling<-function(pos,weights,S){
+  total_mass<-sum(weights)
+  weights_normed<-weights/sum(weights)
+  M<-length(weights)
+  inds<-rmultinom(1,S,weights_normed)
+  w.samp<-rep(total_mass/S,M)
+  w.samp<-w.samp*inds
+  pos.samp<-pos[,w.samp>0]
+  wpp.out<-wpp(t(pos),w.samp)
+  return(wpp.out)
+}
+
+
+#Normalise a vector with respect to the Euclidean norm
+normalise<-function(v){
+  return(v/(sq_norm(v)))
+}
+
+#Convert OT plans from data frame form to matrix form and vice versa.
+plan_convert<-function(plan,target=NULL){
+  if (target=="matrix"){
+    if (is.data.frame(plan)){
+      Tplan<-as.matrix(Matrix::sparseMatrix(i=plan$from,j=plan$to,x=plan$mass))
+      return(Tplan)
+    }
+    else{
+      return(plan)
+    }
+  }
+  if (target=="frame"){
+    if (is.data.frame(plan)){
+      return(plan)
+    }
+    else{
+      d<-dim(plan)
+      rowInds<-matrix(0,d[1],d[2])
+      colInds<-matrix(0,d[1],d[2])
+      for (i in 1:(d[1])){
+        rowInds[i,]<-rep(i,d[2])
+      }
+      for (i in 1:(d[2])){
+        colInds[,i]<-rep(i,d[1])
+      }
+      from<-rowInds[plan>0]
+      to<-colInds[plan>0]
+      mass<-plan[plan>0]
+      return(data.frame(from=from,to=to,mass=mass))
+    }
+  }
+}
+
+mplot_bar<-function(A,pos="top",col,fill,width,size){
+  x<-NULL
+  y<-NULL
+  m<-NULL
+  mdf<-data.frame(x=A$positions,m=A$weights)
+  P<-ggplot2::ggplot(mdf)
+  L<-length(A$weights)
+  for (l in 1:L){
+    P<-P+ggplot2::geom_line(data = data.frame(x = c(A$positions[l], A$positions[l]), y = c(0, A$weights[l])), ggplot2::aes(x = x, y = y),size=width,col=col) 
+  }
+  P<-P+ggplot2::geom_point(ggplot2::aes(x=x,y=m),size=size,show.legend = FALSE,col=fill)+ggplot2::theme_void()
+  if (pos=="left"){
+    P<-P+  ggplot2::scale_y_reverse(position = "right")+ggplot2::coord_flip()
+  }
+  return(P)
+}
+
+
+#plot a single marginal as a lineplot
+mplot<-function(A,pos="top",linecol="black",fillcol="blue",width=3){
+  x<-NULL
+  y<-NULL
+  m<-NULL
+  mdf<-data.frame(x=A$positions,m=A$weights)
+  P<-ggplot2::ggplot(mdf)+ggplot2::geom_area(size=width,color=linecol,fill=fillcol,ggplot2::aes(x=x,y=m))+ggplot2::theme_void()
+  if (pos=="left"){
+    P<-P+  ggplot2::scale_y_reverse(position = "right")+ggplot2::coord_flip()
+  }
+  return(P)
+}
+#Plot transport plan for marginal plots
+Tplot<-function(A,B,plan,size,colgrad,type="points",lgrid=FALSE,tgrid=FALSE,grid.type="dashed",grid.col="lightgrey",grid.width=1){
+  plan<-plan_convert(plan,target="frame")
+  tdf<-data.frame(x=A$positions[plan$from,],y=B$positions[plan$to,],m=plan$mass)
+  #Make the CRAN CHECK happy. 
+  x<-NULL
+  y<-NULL
+  m<-NULL
+  if (type=="pointsCol"){
+    tplot<-ggplot2::ggplot(tdf,ggplot2::aes(x=x,y=y,col=m))
+  }
+  if (type=="pointsSize"){
+    tplot<-ggplot2::ggplot(tdf,ggplot2::aes(x=x,y=y,size=m))
+  }
+  if (type=="line"){
+    tplot<-ggplot2::ggplot(tdf,ggplot2::aes(x=x,y=y,col=m))
+  }
+  
+  
+  if (lgrid){
+    y.vec<-B$positions
+    for (y in y.vec){
+      tplot<-tplot+ggplot2::geom_hline(yintercept=y,linetype=grid.type,col=grid.col,size=grid.width)
+    }
+  }
+  if (tgrid){
+    x.vec<-A$positions
+    for (x in x.vec){
+      tplot<-tplot+ggplot2::geom_vline(xintercept=x,linetype=grid.type,col=grid.col,size=grid.width)
+    }
+  }
+  if (type=="pointsCol"){
+    tplot<-tplot+ggplot2::geom_point(size=size[1],show.legend = FALSE)+
+      ggplot2::scale_colour_continuous(low=colgrad[1],high=colgrad[2])+ggplot2::theme_void()
+  }
+  if (type=="pointsSize"){
+    tplot<-tplot+ggplot2::geom_point(show.legend = FALSE,col=colgrad[1])+ggplot2::theme_void()+ 
+      ggplot2::scale_size_continuous(range = size)
+  }
+  if (type=="line"){
+    tplot<-tplot+ggplot2::geom_line(size=size[1],show.legend = FALSE)+
+      ggplot2::scale_colour_continuous(low=colgrad[1],high=colgrad[2])+ggplot2::theme_void()
+  }
+  return(tplot)
 }

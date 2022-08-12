@@ -102,3 +102,58 @@ arma::mat transport_network_primal_arma(arma::mat a, arma::mat b, arma::mat C){
   }
   return(Tplan);
 }
+
+
+
+std::pair<double,arma::mat> networkflow(arma::mat a, arma::mat b, arma::mat C){
+  struct TsFlow {
+    int from, to;
+    double amount;
+  };
+  typedef FullBipartiteDigraph Digraph;
+  
+  
+  
+  int64_t n1 = a.n_rows;
+  int64_t n2 = b.n_rows; 
+  std::vector<double> weights1(n1), weights2(n2);
+  
+  Digraph di(n1, n2);
+  NetworkSimplexSimple<Digraph, double, double, int64_t> net(di, true, n1 + n2, n1*n2);
+  
+  int64_t idarc = 0;
+  for (int i = 0; i < n1; i++) {
+    for (int j = 0; j < n2; j++) {
+      double d =C(i,j);
+      net.setCost(di.arcFromId(idarc), d);
+      idarc++;
+    }
+  }
+  
+  for (int i = 0; i < n1; i++) {
+    weights1[di.nodeFromId(i)] = a(i,0);
+  }
+  for (int i = 0; i < n2; i++) {
+    weights2[di.nodeFromId(i)] = (-1)*b(i,0);
+  }
+  net.supplyMap(&weights1[0], n1, &weights2[0], n2);
+  net.run();
+  double resultdist = net.totalCost(); 
+  
+  std::vector<TsFlow> flow;
+  flow.reserve(n1 + n2 - 1);
+  arma::mat Tplan=arma::zeros(n1,n2);
+  
+  int count=0;
+  for (int64_t i = 0; i < n1; i++) {
+    for (int64_t j = 0; j < n2; j++)
+    {
+      TsFlow f;
+      f.amount = net.flow(di.arcFromId(i*n2 + j));
+      Tplan(i,j)=f.amount;
+      count+=1;
+    }
+  }
+   std::pair<double,arma::mat> result=std::make_pair(resultdist,Tplan);
+  return result;
+}

@@ -10,6 +10,13 @@
 #' (2,C)-barycenter problem on this grid. Then, the grid is refined, by splitting each grid point into 4 new ones.
 #' Afterwards, all grids points below a certain threshold of mass are removed from the support. This procedure is repeated
 #' until a prespecified resolution is reached. Note, the generated grids are assumed to be in [0,1]^2.
+#' "subgrad" This function finds the best approximation of the (2,C)-barycenter problem of N finitely supported input
+#' measures on a given support set using a subgradient descent method.
+#' "subgrad_ms" his finds the best approximation of the (2,C)-barycenter problem of N finitely supported input
+#' measures by using a multi-scale version of a subgradient method. Given a starting grid it solves the fixed support 
+#' (2,C)-barycenter problem on this grid. Then, the grid is refined, by splitting each grid point into 4 new ones.
+#' Afterwards, all grids points below a certain threshold of mass are removed from the support. This procedure is repeated
+#' until a prespecified resolution is reached. Note, the generated grids are assumed to be in [0,1]^2.
 #' @param data.list A list of objects from which the barycenter should be computed. Each element should be one of the following:
 #' A matrix, representing an image; A path to a file containing an image; 
 #' A \link[transport]{wpp-object}; 
@@ -37,6 +44,7 @@
 #' @param thresh A real number specifying a stopping criterion based on the magnitude of change between consecutive 
 #' iterations. If one encounters numerical instabilities in the computations in the form of either returned NaNs
 #' or warnings notifying the user about near singular matrices, this parameter can be increased to avoid this. 
+#' @param stepsize A real number specifying the initial stepsize for the subgradient descent methods.
 #' @param threads An integer specifying the number of threads used for computations.
 #' @return For details on the returned value refer to the parameter return_type.
 #' @examples
@@ -62,15 +70,20 @@
 #'     pos.full<-rbind(pos.full,pos%*%rotation)
 #'   }
 #'   W<-rep(1,M*nesting.depth)
-#'   data.list[[i]]<-transport::wpp((pos.full+1)/2,W)
+#'   data.list[[i]]<-wpp((pos.full+1)/2,W)
 #' }
 #' #Using the multiscale method
 #' system.time(bary.ms<-WSGeometry::kr_bary(data.list,C,method="multiscale",
 #' support=c(8,8,3,10^-2),wmaxIter=100,return_type="mat",thresh=6*10^-4,threads=1))
+#' \donttest{
+#' system.time(bary.ms.sg<-WSGeometry::kr_bary(data.list,C,method="subgrad_ms",
+#' support=c(8,8,3,10^-2),wmaxIter=100,return_type="mat",thresh=10^-5,threads=1))
 #' #Using the fixed support method
 #' support<-t(WSGeometry::grid_positions(20,20))
 #' system.time(bary.fixed<-WSGeometry::kr_bary(data.list,C,method="fixed",
 #' support=support,wmaxIter=100,return_type="wpp",thresh=6*10^-4,threads=1))
+#' system.time(bary.fixed.sg<-WSGeometry::kr_bary(data.list,C,method="subgrad",
+#' support=support,wmaxIter=200,thresh=10^-5,return_type="wpp"))
 #' #Using the free support method
 #' support<-t(WSGeometry::grid_positions(8,8))
 #' system.time(bary.free<-WSGeometry::kr_bary(data.list,C,method="free",
@@ -79,14 +92,16 @@
 #' #The outputs can be conveniently visualised using the image function for the "mat" output
 #' #and the plot-method for the wpp-objects provided by the transport package.
 #' image(bary.ms)
+#' image(bary.ms.sg)
 #' plot(bary.fixed)
 #' plot(bary.free)
-#' 
+#' plot(bary.fixed.sg)
+#' }
 #' @references Ge, DongDong, et al. "Interior-Point Methods Strike Back: Solving the Wasserstein Barycenter Problem." 
 #' Advances in Neural Information Processing Systems 32 (2019): 6894-6905.
 #' Kantorovich-Rubinstein distance and barycenter for finitely supported measures: Foundations and Algorithms; Heinemann, Klatt and Munk; https://arxiv.org/pdf/2112.03581.pdf. 
 #' @export
-kr_bary<-function(data.list,C,method="fixed",support,wmaxIter,pmaxIter,return_type="default",thresh=10^-3,threads=1){
+kr_bary<-function(data.list,C,method="fixed",support,wmaxIter,pmaxIter,return_type="default",thresh=10^-3,stepsize=1,threads=1){
   N<-length(data.list)
   types<-lapply(data.list,type_check)
   data.list<-mapply(process_data_unb,data.list,types,SIMPLIFY = FALSE)
@@ -132,6 +147,37 @@ kr_bary<-function(data.list,C,method="fixed",support,wmaxIter,pmaxIter,return_ty
     }
     warning("The chosen return type is not supported. Using the default instead.")
     return(list(positions=res[[1]],weights=res[[2]]))
+  }
+  if (method=="subgrad"){
+    run<-TRUE
+    res<-unb_subgrad_wrap(lapply(lapply(data.list,"[[",1),t),lapply(data.list,"[[",2),support,C,matrix(rep(1/N,N)),wmaxIter,NULL,stepsize,thresh,warmstart=FALSE)
+    if (return_type=="default"){
+      return(list(positions=support,weights=res))
+    }
+    if (return_type=="wpp"){
+      return(wpp(t(support),res))
+    }
+    if (return_type=="vec"){
+      return(res)
+    }
+    warning("The chosen return type is not supported. Using the default instead.")
+    return(list(positions=support,weights=res))
+  }
+  if (method=="subgrad_ms"){
+    run<-TRUE
+    res<-kr_multi_scale_bary_subgrad(lapply(lapply(data.list,"[[",1),t),lapply(data.list,"[[",2),C,support[1:2],support[3],support[4],wmaxIter,NULL,thresh,threads)
+    
+    if (return_type=="default"){
+      return(list(positions=res[[1]],weights=res[[2]]))
+    }
+    if (return_type=="wpp"){
+      return(wpp(t(res[[1]]),res[[2]]))
+    }
+    if (return_type=="mat"){
+      return(res[[3]])
+    }
+    warning("The chosen return type is not supported. Using the default instead.")
+    return(list(positions=support,weights=res))
   }
   if (!run){
     stop("Invalid method chosen. The available methods are called fixed, free and multiscale. Please, refer 

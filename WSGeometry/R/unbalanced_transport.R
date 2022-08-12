@@ -9,23 +9,36 @@
 #' @return A list containing an entry "distance" (specifying the KR distance between the two measures) and an 
 #' entry "plan" containing an optimal plan for the unbalanced optimal transport problem.
 #' @examples 
-#' M<-1000
+#' M<-2000
 #' W1<-runif(M)
 #' W2<-runif(M)
 #' pos1<-matrix(runif(M*2),M,2)
 #' pos2<-matrix(runif(M*2),M,2)
-#' wpp1<-transport::wpp(pos1,W1)
-#' wpp2<-transport::wpp(pos2,W2)
-#' system.time(res<-WSGeometry:::kr_dist(wpp1,wpp2,2,2))
+#' wpp1<-wpp(pos1,W1)
+#' wpp2<-wpp(pos2,W2)
+#' system.time(res<-kr_dist(wpp1,wpp2,2,2))
 #' @references Kantorovich-Rubinstein distance and barycenter for finitely supported measures:  Foundations and Algorithms; Florian Heinemann, Marcel Klatt, Axel Munk; https://arxiv.org/pdf/2112.03581.pdf.
 #' @export
 kr_dist<-function(A,B,p=2,C){
+  if (!requireNamespace("transport", quietly = TRUE)) {
+    stop("The package transport is required for this method. Please install it to use this function.")
+  }
   Atype<-type_check(A)
   Btype<-type_check(B)
-  A<-process_data(A,Atype)
-  A<-transport::wpp(A$positions,A$weights)
-  B<-process_data(B,Btype)
-  B<-transport::wpp(B$positions,B$weights)
+  A<-process_data_unb(A,Atype)
+  A<-wpp(A$positions,A$weights)
+  B<-process_data_unb(B,Btype)
+  B<-wpp(B$positions,B$weights)
+  if ((sum(A$mass)==0)&(sum(B$mass)==0)){
+    return(list(distance=0,plan=matrix(0,A$N,B$N)))
+  }
+  if ((sum(A$mass)>0)&(sum(B$mass)==0)){
+    return(list(distance=0.5*C^p*sum(A$mass),plan=matrix(0,A$N,B$N)))
+  }
+  if ((sum(A$mass)==0)&(sum(B$mass)>0)){
+    return(list(distance=0.5*C^p*sum(B$mass),plan=matrix(0,A$N,B$N)))
+  }
+  
   costM<-gen_cost(B$coordinates,A$coordinates)^(p/2)
   costM<-rbind(costM,C^p/2)
   costM<-cbind(costM,C^p/2)

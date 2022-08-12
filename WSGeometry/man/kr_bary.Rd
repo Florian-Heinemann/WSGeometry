@@ -13,6 +13,7 @@ kr_bary(
   pmaxIter,
   return_type = "default",
   thresh = 10^-3,
+  stepsize = 1,
   threads = 1
 )
 }
@@ -52,6 +53,8 @@ option "mat" which returns the barycenter in matrix form on a grid of the final 
 iterations. If one encounters numerical instabilities in the computations in the form of either returned NaNs
 or warnings notifying the user about near singular matrices, this parameter can be increased to avoid this.}
 
+\item{stepsize}{A real number specifying the initial stepsize for the subgradient descent methods.}
+
 \item{threads}{An integer specifying the number of threads used for computations.}
 }
 \value{
@@ -66,6 +69,13 @@ measures on a given support set using a modified MAAIPM algorithm to solve the c
 alternating between updating weights and positions of a candidate barycenter.
 "multiscale": This finds the best approximation of the (2,C)-barycenter problem of N finitely supported input
 measures by using a multi-scale version of a modified MAAIPM method. Given a starting grid it solves the fixed support 
+(2,C)-barycenter problem on this grid. Then, the grid is refined, by splitting each grid point into 4 new ones.
+Afterwards, all grids points below a certain threshold of mass are removed from the support. This procedure is repeated
+until a prespecified resolution is reached. Note, the generated grids are assumed to be in [0,1]^2.
+"subgrad" This function finds the best approximation of the (2,C)-barycenter problem of N finitely supported input
+measures on a given support set using a subgradient descent method.
+"subgrad_ms" his finds the best approximation of the (2,C)-barycenter problem of N finitely supported input
+measures by using a multi-scale version of a subgradient method. Given a starting grid it solves the fixed support 
 (2,C)-barycenter problem on this grid. Then, the grid is refined, by splitting each grid point into 4 new ones.
 Afterwards, all grids points below a certain threshold of mass are removed from the support. This procedure is repeated
 until a prespecified resolution is reached. Note, the generated grids are assumed to be in [0,1]^2.
@@ -93,15 +103,20 @@ for (i in 1:N){
     pos.full<-rbind(pos.full,pos\%*\%rotation)
   }
   W<-rep(1,M*nesting.depth)
-  data.list[[i]]<-transport::wpp((pos.full+1)/2,W)
+  data.list[[i]]<-wpp((pos.full+1)/2,W)
 }
 #Using the multiscale method
 system.time(bary.ms<-WSGeometry::kr_bary(data.list,C,method="multiscale",
 support=c(8,8,3,10^-2),wmaxIter=100,return_type="mat",thresh=6*10^-4,threads=1))
+\donttest{
+system.time(bary.ms.sg<-WSGeometry::kr_bary(data.list,C,method="subgrad_ms",
+support=c(8,8,3,10^-2),wmaxIter=100,return_type="mat",thresh=10^-5,threads=1))
 #Using the fixed support method
 support<-t(WSGeometry::grid_positions(20,20))
 system.time(bary.fixed<-WSGeometry::kr_bary(data.list,C,method="fixed",
 support=support,wmaxIter=100,return_type="wpp",thresh=6*10^-4,threads=1))
+system.time(bary.fixed.sg<-WSGeometry::kr_bary(data.list,C,method="subgrad",
+support=support,wmaxIter=200,thresh=10^-5,return_type="wpp"))
 #Using the free support method
 support<-t(WSGeometry::grid_positions(8,8))
 system.time(bary.free<-WSGeometry::kr_bary(data.list,C,method="free",
@@ -110,9 +125,11 @@ support=support,wmaxIter=100,pmaxIter=25,return_type="wpp",thresh=8*10^-4,thread
 #The outputs can be conveniently visualised using the image function for the "mat" output
 #and the plot-method for the wpp-objects provided by the transport package.
 image(bary.ms)
+image(bary.ms.sg)
 plot(bary.fixed)
 plot(bary.free)
-
+plot(bary.fixed.sg)
+}
 }
 \references{
 Ge, DongDong, et al. "Interior-Point Methods Strike Back: Solving the Wasserstein Barycenter Problem." 

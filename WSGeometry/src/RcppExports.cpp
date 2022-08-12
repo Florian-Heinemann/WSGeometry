@@ -108,6 +108,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// krbary_subgrad_cxx
+Rcpp::List krbary_subgrad_cxx(const Rcpp::List weightsR, const Rcpp::List costMatsR, const arma::mat frechet_weights, const int maxIter, const double stepsize, const double thresh, bool headstart, const int headstartlength, int threads);
+RcppExport SEXP _WSGeometry_krbary_subgrad_cxx(SEXP weightsRSEXP, SEXP costMatsRSEXP, SEXP frechet_weightsSEXP, SEXP maxIterSEXP, SEXP stepsizeSEXP, SEXP threshSEXP, SEXP headstartSEXP, SEXP headstartlengthSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type weightsR(weightsRSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type costMatsR(costMatsRSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type frechet_weights(frechet_weightsSEXP);
+    Rcpp::traits::input_parameter< const int >::type maxIter(maxIterSEXP);
+    Rcpp::traits::input_parameter< const double >::type stepsize(stepsizeSEXP);
+    Rcpp::traits::input_parameter< const double >::type thresh(threshSEXP);
+    Rcpp::traits::input_parameter< bool >::type headstart(headstartSEXP);
+    Rcpp::traits::input_parameter< const int >::type headstartlength(headstartlengthSEXP);
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(krbary_subgrad_cxx(weightsR, costMatsR, frechet_weights, maxIter, stepsize, thresh, headstart, headstartlength, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
 // maaipm_fixed_cpp
 Rcpp::List maaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x, const arma::vec b, const arma::vec costvec, const arma::sp_mat constMat, const int N, const int m, const int M, const arma::vec sizes, const arma::vec sizescsum, const int nr, const int nc, const arma::sp_mat U, const int maxIter, const double thresh, const int threads);
 RcppExport SEXP _WSGeometry_maaipm_fixed_cpp(SEXP pSEXP, SEXP sSEXP, SEXP xSEXP, SEXP bSEXP, SEXP costvecSEXP, SEXP constMatSEXP, SEXP NSEXP, SEXP mSEXP, SEXP MSEXP, SEXP sizesSEXP, SEXP sizescsumSEXP, SEXP nrSEXP, SEXP ncSEXP, SEXP USEXP, SEXP maxIterSEXP, SEXP threshSEXP, SEXP threadsSEXP) {
@@ -261,6 +280,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_WSGeometry_expo", (DL_FUNC) &_WSGeometry_expo, 1},
     {"_WSGeometry_gen_cost", (DL_FUNC) &_WSGeometry_gen_cost, 2},
     {"_WSGeometry_wsbary_cxx_armaP", (DL_FUNC) &_WSGeometry_wsbary_cxx_armaP, 13},
+    {"_WSGeometry_krbary_subgrad_cxx", (DL_FUNC) &_WSGeometry_krbary_subgrad_cxx, 9},
     {"_WSGeometry_maaipm_fixed_cpp", (DL_FUNC) &_WSGeometry_maaipm_fixed_cpp, 17},
     {"_WSGeometry_maaipm_free_cpp", (DL_FUNC) &_WSGeometry_maaipm_free_cpp, 20},
     {"_WSGeometry_transport_network_dual_arma", (DL_FUNC) &_WSGeometry_transport_network_dual_arma, 3},

@@ -66,6 +66,9 @@
 #' Y Zemel and VM Panaretos (2019). Fréchet Means and Procrustes Analysis in Wasserstein Space. Bernoulli 25(2):932-976.
 #' @export
 location_scatter_bary<-function(means,cov,thresh=10^(-5),maxiter=100,showIter=FALSE){
+  if (!requireNamespace("expm", quietly = TRUE)) {
+    stop("This method requires expm to run. Please install it to use this function,")
+  }
   S.list<-cov
   N<-length(S.list)
   d<-dim(S.list[[1]])

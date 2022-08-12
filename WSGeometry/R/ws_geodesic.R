@@ -24,6 +24,9 @@
 #' plotGeodesic(geodesic,File="GeodesicR2",images=FALSE,gif=FALSE)
 #' @export
 geodesic_pos<-function(P1,P2,p=2,steps){
+  if (!requireNamespace("transport", quietly = TRUE)) {
+    stop("The package transport is required for this method. Please install it to use this function.")
+  }
   P1type<-type_check(P1)
   P2type<-type_check(P2)
   P1<-process_data(P1,P1type,return_type="wpp")
@@ -44,7 +47,7 @@ geodesic_pos<-function(P1,P2,p=2,steps){
   N<-length(steps)
   out.list<-vector("list",N)
   for (i in 1:N){
-    out.list[[i]]<-transport::wpp(start+(V*steps[i]),W)
+    out.list[[i]]<-wpp(start+(V*steps[i]),W)
   }
   return(out.list)
 }

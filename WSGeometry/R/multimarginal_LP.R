@@ -13,8 +13,12 @@
 
 multi_marginal<-function(weights,costA){
   if (!requireNamespace("Rsymphony", quietly = TRUE)) {
-    warning("Package Rsymphony not detected: Please install Rsymphony for optimal performance if you are not using a Mac.")
+    warning("Package Rsymphony not detected: Please install Rsymphony for optimal performance 
+            if you are not using a Mac. Alternatively, install lpSolve.")
     Rsym<-FALSE
+    if (!requireNamespace("lpSolve", quietly = TRUE)) {
+      stop("Neither Rsymphony nor lpSolve detected. Please install at least one of the two to utilise this method.")
+    }
   }
   else{
     Rsym<-TRUE

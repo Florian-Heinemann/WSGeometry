@@ -65,7 +65,7 @@
 #'   U<-runif(M)
 #'   U<-U/sum(U)
 #'   pos<-matrix(runif(d*M),M,d)
-#'   data.list[[i]]<-transport::wpp(pos,U)
+#'   data.list[[i]]<-wpp(pos,U)
 #' }
 #' 
 #' #point pattern
@@ -115,7 +115,7 @@
 #'   pos<-pos+1
 #'   pos<-pos/2
 #'   W<-rep(1/supp.size,supp.size)
-#'   data.list[[i]]<-transport::wpp(pos,W)
+#'   data.list[[i]]<-wpp(pos,W)
 #'   I<-bin2d(data.list[[i]]$coordinates,data.list[[i]]$mass,c(L*2,L*2))
 #'   I<-smear(I,1,1)
 #'   I<-I/sum(I)
@@ -192,7 +192,7 @@ wasserstein_bary<-function(data.list,frechet.weights=NULL,method="alternating",r
     data.list<-mapply(process_data,data.list,types,SIMPLIFY = FALSE)
     bary<-barycenter_lp(lapply(data.list,"[[",1),lapply(data.list,"[[",2),frechet.weights)
     if ((return_type=="wpp")){
-      return(transport::wpp(bary$positions,bary$weights))
+      return(wpp(bary$positions,bary$weights))
     }
     if (return_type=="default"){
       return(list(positions=bary$positions,weights=bary$weights))
@@ -217,7 +217,7 @@ wasserstein_bary<-function(data.list,frechet.weights=NULL,method="alternating",r
       print(iter.run)
     }
     if ((return_type=="wpp")){
-      return(transport::wpp(support,bary.est))
+      return(wpp(support,bary.est))
     }
     if (return_type=="default"){
       return(list(positions=support,weights=bary.est))
@@ -246,7 +246,7 @@ wasserstein_bary<-function(data.list,frechet.weights=NULL,method="alternating",r
       return(matrix(bary.est,return_grid[1],return_grid[2]))
     }
     if ((return_type=="wpp")){
-      return(transport::wpp(support,bary.est))
+      return(wpp(support,bary.est))
     }
     if (return_type=="default"){
       return(list(positions=support,weights=bary.est))
@@ -285,7 +285,7 @@ wasserstein_bary<-function(data.list,frechet.weights=NULL,method="alternating",r
       print(iter.run)
     }
     if ((return_type=="wpp")){
-      return(transport::wpp(support,bary[[2]]))
+      return(wpp(support,bary[[2]]))
     }
     if (return_type=="default"){
       return(list(positions=support,weights=bary[[2]]))
@@ -313,7 +313,7 @@ wasserstein_bary<-function(data.list,frechet.weights=NULL,method="alternating",r
       print(iter.run)
     }
     if ((return_type=="wpp")){
-      return(transport::wpp(bary[[1]],bary[[2]]))
+      return(wpp(bary[[1]],bary[[2]]))
     }
     if (return_type=="default"){
       return(list(positions=bary[[1]],weights=bary[[2]]))
@@ -340,7 +340,7 @@ wasserstein_bary<-function(data.list,frechet.weights=NULL,method="alternating",r
       print(iter.run)
     }
     if ((return_type=="wpp")){
-      return(transport::wpp(bary[[1]],bary[[2]]))
+      return(wpp(bary[[1]],bary[[2]]))
     }
     if (return_type=="default"){
       return(list(positions=bary[[1]],weights=bary[[2]]))

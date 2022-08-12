@@ -50,7 +50,7 @@ for (i in 1:N){
   pos<-pos+1
   pos<-pos/2
   W<-rep(1/supp.size,supp.size)
-  data.list[[i]]<-transport::wpp(pos,W)
+  data.list[[i]]<-wpp(pos,W)
 }
 
 res1<-wasserstein_bary(data.list,return_type = "wpp",method="alternating",

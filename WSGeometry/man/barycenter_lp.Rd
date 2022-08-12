@@ -26,6 +26,7 @@ measures explicitly by solving the corresponding linear program.
 \examples{
 pos.list<-vector("list",4)
 weights.list<-vector("list",4)
+wpp.list<-vector("list",4)
 pos.list[[1]]<-matrix(c(0,0,1,1,1,0,0,1),nrow=4,ncol=2)/10
 pos.list[[2]]<-matrix(c(9,9,10,10,10,9,9,10),nrow=4,ncol=2)/10
 pos.list[[3]]<-matrix(c(9,9,10,10,1,0,0,1),nrow=4,ncol=2)/10
@@ -38,7 +39,14 @@ weights.list[[2]]<-rep(1/4,4)
 weights.list[[3]]<-rep(1/4,4)
 weights.list[[4]]<-rep(1/4,4)
 bary<-barycenter_lp(pos.list,weights.list)
-points(bary$positions[,1],bary$positions[,2], col = "orange", pch = 13)
+wpp.list[[1]]<-wpp(pos.list[[1]],weights.list[[1]])
+wpp.list[[2]]<-wpp(pos.list[[2]],weights.list[[2]])
+wpp.list[[3]]<-wpp(pos.list[[3]],weights.list[[3]])
+wpp.list[[4]]<-wpp(pos.list[[4]],weights.list[[4]])
+bary.wpp<-wpp(bary$positions,bary$weights)
+wpp.list[[5]]<-bary.wpp
+multiwppplot(wpp.list,pch=c(21,21,21,21,24),bg=c("blue","red","darkgreen","purple","orange")
+,col=rep("black",5),cex=3,clean=TRUE)
 }
 \references{
 E Anderes, S Borgwardt, and J Miller (2016). Discrete Wasserstein barycenters: 

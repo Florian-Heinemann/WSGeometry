@@ -103,7 +103,6 @@ Rcpp::List umaaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
   omp_set_num_threads(threads);
 #endif
   int iter=0;
-  double N2=N;
   double m2=m;
   const int Mm=M*m;
   double bc = 1+std::max(sqrt(Usqnorm(costvec)), sqrt(Usqnorm(b)));
@@ -112,12 +111,7 @@ Rcpp::List umaaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
   arma::vec Rd=constMat.t()*p+s-costvec;
   arma::vec Rp=constMat*x-b;
   double relResidual=(Usqnorm(Rd)+Usqnorm(Rp)+Usqnorm(Rc))/bc;
-  double relResidual_old = relResidual ;
-  double relResidual_old_old = relResidual_old;
   double rel_gap = 1e15;
-  double rel_gap_old= rel_gap;
-  double rel_gap_old_old = rel_gap_old;
-  double optval=0;
   const double maxDiag=5.e+14;
   const int data_dim=support.n_rows;
   arma::vec d=x/s;
@@ -177,13 +171,9 @@ Rcpp::List umaaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
     
     d=x/s;
     while((iter<maxIter) & ((mu>thresh)| (rel_gap>thresh)| (relResidual>thresh))){
-      relResidual_old_old = relResidual_old;
-      relResidual_old = relResidual ;
-      rel_gap_old_old = rel_gap_old;
-      rel_gap_old = rel_gap;
-      
+
       rel_gap=(accu(costvec%x) - accu(b%p))/(abs(accu(b%p))+abs(accu(costvec%x))+1);
-      optval=accu(costvec%x)/N2;
+      //optval=accu(costvec%x)/N2;
       
       d=x/s; 
       d.elem(find(d>=maxDiag)).fill(maxDiag); 
@@ -231,7 +221,7 @@ Rcpp::List umaaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
       xx.subvec(M,nr-2)= xx.subvec(M,nr-2)-(alpha*xx(nr-1)/cc);
       xx.subvec(0,M-1)=xx.subvec(0,M-1)/B1diag;
       xx(nr-1)/=cc;
-      if ((rel_gap>=(10^-3))&& (largesupp)){
+      if ((rel_gap>=(1e-3))&& (largesupp)){
         xx.subvec(M,nr-2)=UDLRM_intern(B1,B2,B3inv,Y,sizescsum, xx.subvec(M,nr-2),N,m,U);
       }
       else{   
@@ -271,7 +261,7 @@ Rcpp::List umaaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
       xx.subvec(M,nr-2)= xx.subvec(M,nr-2)-(alpha*xx(nr-1)/cc);
       xx.subvec(0,M-1)=xx.subvec(0,M-1)/B1diag;
       xx(nr-1)/=cc;
-      if ((rel_gap>=(10^-3))&& (largesupp)){
+      if ((rel_gap>=(1e-3))&& (largesupp)){
         xx.subvec(M,nr-2)=UDLRM_intern(B1,B2,B3inv,Y,sizescsum, xx.subvec(M,nr-2),N,m,U);
       }
       else{   
@@ -325,10 +315,7 @@ Rcpp::List umaaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
     support2.elem(find(tmp>0))/=tmp.elem(find(tmp>0));
     support.elem(find(tmp>0))=support2.elem(find(tmp>0));
     costvec.subvec(0,M*m-1)=vectorise(Udist_mat(support,fullsupport,C,2.0));
-    //Rcout <<accu(costvec%x)/N2<<std::endl;
-    // for (int i=0;i<N;i++){
-    //   costvec.subvec(sizescsum(i)*m,sizescsum(i+1)-1)=dist_mat(support,);
-    // }
+
     outer_iter++;
   }
   
@@ -348,7 +335,6 @@ Rcpp::List umaaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::v
   omp_set_num_threads(threads);
 #endif
   int iter=0;
-  double N2=N;
   double m2=m;
   const int Mm=M*m;
   double bc = 1+std::max(sqrt(Usqnorm(costvec)), sqrt(Usqnorm(b)));
@@ -357,12 +343,7 @@ Rcpp::List umaaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::v
   arma::vec Rd=constMat.t()*p+s-costvec;
   arma::vec Rp=constMat*x-b;
   double relResidual=(Usqnorm(Rd)+Usqnorm(Rp)+Usqnorm(Rc))/bc;
-  double relResidual_old = relResidual ;
-  double relResidual_old_old = relResidual_old;
   double rel_gap = 1e15;
-  double rel_gap_old= rel_gap;
-  double rel_gap_old_old = rel_gap_old;
-  double optval=0;
   const double maxDiag=5.e+14;
   const int data_dim=support.n_rows;
   arma::vec d=x/s;
@@ -384,7 +365,6 @@ Rcpp::List umaaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::v
   arma::vec dp=zeros(p.n_elem);
   arma::vec dx=zeros(x.n_elem);
   arma::vec ds=zeros(s.n_elem);
-  int L=x.n_elem;
   double cc;
   double eta;
   double sigma;
@@ -419,13 +399,9 @@ Rcpp::List umaaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::v
     
     d=x/s;
     while((iter<maxIter) & ((mu>thresh)| (rel_gap>thresh)| (relResidual>thresh))){
-      relResidual_old_old = relResidual_old;
-      relResidual_old = relResidual ;
-      rel_gap_old_old = rel_gap_old;
-      rel_gap_old = rel_gap;
-      
+
       rel_gap=(accu(costvec%x) - accu(b%p))/(abs(accu(b%p))+abs(accu(costvec%x))+1);
-      optval=accu(costvec%x)/N2;
+      //optval=accu(costvec%x)/N2;
       
       d=x/s; 
       d.elem(find(d>=maxDiag)).fill(maxDiag); 
@@ -473,7 +449,7 @@ Rcpp::List umaaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::v
       xx.subvec(M,nr-2)= xx.subvec(M,nr-2)-(alpha*xx(nr-1)/cc);
       xx.subvec(0,M-1)=xx.subvec(0,M-1)/B1diag;
       xx(nr-1)/=cc;
-      if ((rel_gap>=(10^-3))&& (largesupp)){
+      if ((rel_gap>=(1e-3))&& (largesupp)){
         xx.subvec(M,nr-2)=UDLRM_intern(B1,B2,B3inv,Y,sizescsum, xx.subvec(M,nr-2),N,m,U);
       }
       else{   
@@ -512,7 +488,7 @@ Rcpp::List umaaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::v
       xx.subvec(M,nr-2)= xx.subvec(M,nr-2)-(alpha*xx(nr-1)/cc);
       xx.subvec(0,M-1)=xx.subvec(0,M-1)/B1diag;
       xx(nr-1)/=cc;
-      if ((rel_gap>=(10^-3))&& (largesupp)){
+      if ((rel_gap>=(1e-3))&& (largesupp)){
         xx.subvec(M,nr-2)=UDLRM_intern(B1,B2,B3inv,Y,sizescsum, xx.subvec(M,nr-2),N,m,U);
       }
       else{   

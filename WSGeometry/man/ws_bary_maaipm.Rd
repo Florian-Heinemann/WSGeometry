@@ -92,6 +92,7 @@ for (i in 1:N){
 #Using the multiscale method
 system.time(bary.ms<-WSGeometry::ws_bary_maaipm(data.list,method="multiscale",
 support=c(8,8,3,10^-4),wmaxIter=100,return_type="mat",thresh=6*10^-4,threads=1))
+\donttest{
 #Using the fixed support method
 support<-t(WSGeometry::grid_positions(20,20))
 system.time(bary.fixed<-WSGeometry::ws_bary_maaipm(data.list,method="fixed",
@@ -106,7 +107,7 @@ support=support,wmaxIter=100,pmaxIter=25,return_type="wpp",thresh=6*10^-4,thread
 image(bary.ms)
 plot(bary.fixed)
 plot(bary.free)
-
+}
 }
 \references{
 Ge, DongDong, et al. "Interior-Point Methods Strike Back: Solving the Wasserstein Barycenter Problem." 

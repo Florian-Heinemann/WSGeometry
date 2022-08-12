@@ -20,19 +20,22 @@
 #'Optimal transport: Fast probabilistic approximations with exact solvers.  Journal of Machine Learning Research 20(105):1--23.
 #' @export
 ws_dist<-function(A,B,p=2,sampling=FALSE,S=NULL,R=NULL){
+  if (!requireNamespace("transport", quietly = TRUE)) {
+    stop("The package transport is required for this method. Please install it to use this function.")
+  }
   Atype<-type_check(A)
   Btype<-type_check(B)
   A<-process_data(A,Atype)
-  A<-transport::wpp(A$positions,A$weights)
+  A<-wpp(A$positions,A$weights)
   B<-process_data(B,Btype)
-  B<-transport::wpp(B$positions,B$weights)
+  B<-wpp(B$positions,B$weights)
   if (sampling){
     res<-0
     for (r in 1:R){
       A.sub<-data_sample(list(A$coordinates),list(A$mass),S)
-      A.sub<-transport::wpp(A.sub$positions[[1]],A.sub$weights[[1]])
+      A.sub<-wpp(A.sub$positions[[1]],A.sub$weights[[1]])
       B.sub<-data_sample(list(B$coordinates),list(B$mass),S)
-      B.sub<-transport::wpp(B.sub$positions[[1]],B.sub$weights[[1]])
+      B.sub<-wpp(B.sub$positions[[1]],B.sub$weights[[1]])
       res<-res+(transport::transport(A.sub,B.sub,p,method="networkflow",fullreturn=TRUE)$cost)^(1/p)
     }
     res<-res/R

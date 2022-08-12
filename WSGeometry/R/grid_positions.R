@@ -3,6 +3,10 @@
 #' @param n Integer giving one dimension of the grid.
 #' @param m integer giving the other dimension of the grid.
 #' @return A (nm)x2 grid containing the positions of the desired grid. 
+#' @examples 
+#' grid<-grid_positions(32,32)
+#' grid.wpp<-wpp(grid,rep(1,1024))
+#' wppplot(grid.wpp)
 #' @export
 grid_positions<-function(n,m){
   G1<-expand.grid(n:1,1:m)

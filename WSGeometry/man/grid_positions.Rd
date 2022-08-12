@@ -17,3 +17,8 @@ A (nm)x2 grid containing the positions of the desired grid.
 \description{
 Generates a matrix containing the positions of the points of an equidistant 2d grid in [0,1]^2.
 }
+\examples{
+grid<-grid_positions(32,32)
+grid.wpp<-wpp(grid,rep(1,1024))
+wppplot(grid.wpp)
+}

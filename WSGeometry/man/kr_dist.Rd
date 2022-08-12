@@ -25,14 +25,14 @@ entry "plan" containing an optimal plan for the unbalanced optimal transport pro
 This function constructs the corresponding problem and solves it suing the \link[transport]{transport}-function.
 }
 \examples{
-M<-1000
+M<-2000
 W1<-runif(M)
 W2<-runif(M)
 pos1<-matrix(runif(M*2),M,2)
 pos2<-matrix(runif(M*2),M,2)
-wpp1<-transport::wpp(pos1,W1)
-wpp2<-transport::wpp(pos2,W2)
-system.time(res<-WSGeometry:::kr_dist(wpp1,wpp2,2,2))
+wpp1<-wpp(pos1,W1)
+wpp2<-wpp(pos2,W2)
+system.time(res<-kr_dist(wpp1,wpp2,2,2))
 }
 \references{
 Kantorovich-Rubinstein distance and barycenter for finitely supported measures:  Foundations and Algorithms; Florian Heinemann, Marcel Klatt, Axel Munk; https://arxiv.org/pdf/2112.03581.pdf.

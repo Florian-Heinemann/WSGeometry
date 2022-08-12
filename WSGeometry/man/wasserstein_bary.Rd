@@ -114,7 +114,7 @@ for (i in (K+1):(2*K)){
   U<-runif(M)
   U<-U/sum(U)
   pos<-matrix(runif(d*M),M,d)
-  data.list[[i]]<-transport::wpp(pos,U)
+  data.list[[i]]<-wpp(pos,U)
 }
 
 #point pattern
@@ -164,7 +164,7 @@ for (i in 1:N){
   pos<-pos+1
   pos<-pos/2
   W<-rep(1/supp.size,supp.size)
-  data.list[[i]]<-transport::wpp(pos,W)
+  data.list[[i]]<-wpp(pos,W)
   I<-bin2d(data.list[[i]]$coordinates,data.list[[i]]$mass,c(L*2,L*2))
   I<-smear(I,1,1)
   I<-I/sum(I)

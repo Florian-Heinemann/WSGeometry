@@ -170,7 +170,6 @@ Rcpp::List maaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
 #endif
 //  typedef Mat<mp::float128> mat;
   int iter=0;
-  double N2=N;
   const int Mm=M*m;
   double bc = 1+std::max(sqrt(sqnorm(costvec)), sqrt(sqnorm(b)));
   arma::vec Rc = x%s;
@@ -178,12 +177,7 @@ Rcpp::List maaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
   arma::vec Rd=constMat.t()*p+s-costvec;
   arma::vec Rp=constMat*x-b;
   double relResidual=(sqnorm(Rd)+sqnorm(Rp)+sqnorm(Rc))/bc;
-  double relResidual_old = relResidual ;
-  double relResidual_old_old = relResidual_old;
   double rel_gap = 1e15;
-  double rel_gap_old= rel_gap;
-  double rel_gap_old_old = rel_gap_old;
-  double optval=0;
   const double maxDiag=5.e+14;
   arma::vec d=x/s;
   arma::vec t1;
@@ -204,7 +198,6 @@ Rcpp::List maaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
   arma::vec dp=zeros(p.n_elem);
   arma::vec dx=zeros(x.n_elem);
   arma::vec ds=zeros(s.n_elem);
-  int L=x.n_elem;
   double cc;
   double eta;
   double sigma;
@@ -219,36 +212,30 @@ Rcpp::List maaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
 
   
   while((iter<maxIter) & ((mu>thresh)| (rel_gap>thresh)| (relResidual>thresh))){
-    //Rcout<<"Start Loop";
-    relResidual_old_old = relResidual_old;
-    relResidual_old = relResidual ;
-    rel_gap_old_old = rel_gap_old;
-    rel_gap_old = rel_gap;
-    
+
     rel_gap=(accu(costvec%x) - accu(b%p))/(abs(accu(b%p))+abs(accu(costvec%x))+1);
-    optval=accu(costvec%x)/N2;
+    //optval=accu(costvec%x)/N2;
     
-    d=x/s; //correct
-    d.elem(find(d>=maxDiag)).fill(maxDiag); //correct
-    t1=x%Rd-Rc; //correct
-    t2=-(Rp+constMat*(t1/s)); //correct
-//    Rcout <<"start first solve";
+    d=x/s;
+    d.elem(find(d>=maxDiag)).fill(maxDiag);
+    t1=x%Rd-Rc; 
+    t2=-(Rp+constMat*(t1/s)); 
     //start first solve
-    dpile=reshape(d.subvec(0,(Mm-1)),m,M); //correct
-    B1diag=(sum(dpile,0)).t(); //correct
-    dpile.shed_row(0); //correct
+    dpile=reshape(d.subvec(0,(Mm-1)),m,M); 
+    B1diag=(sum(dpile,0)).t(); 
+    dpile.shed_row(0); 
     if (iter==0){
       for (int i=0;i<N;i++){
-        B2.push_back((dpile.cols(sizescsum(i),sizescsum(i+1)-1)).t()); //correct
-        B1.push_back(speye(sizes(i),sizes(i))); //correct
+        B2.push_back((dpile.cols(sizescsum(i),sizescsum(i+1)-1)).t());
+        B1.push_back(speye(sizes(i),sizes(i))); 
         B1inv.push_back(speye(sizes(i),sizes(i)));
-        B1.at(i).diag()=(B1diag.subvec(sizescsum(i),sizescsum(i+1)-1)); //correct
+        B1.at(i).diag()=(B1diag.subvec(sizescsum(i),sizescsum(i+1)-1)); 
         B1inv.at(i).diag()=(1.0/B1diag.subvec(sizescsum(i),sizescsum(i+1)-1)); 
         T.push_back(B2.at(i).t()*B1inv.at(i)); 
-        B3.push_back(speye(m-1,m-1)); //Correct
-        B3inv.push_back(speye(m-1,m-1)); //correct
-        B3.at(i).diag()=sum(dpile.cols(sizescsum(i),sizescsum(i+1)-1),1); //correct
-        B3inv.at(i).diag()=1.0/sum(dpile.cols(sizescsum(i),sizescsum(i+1)-1),1); //correct
+        B3.push_back(speye(m-1,m-1)); 
+        B3inv.push_back(speye(m-1,m-1)); 
+        B3.at(i).diag()=sum(dpile.cols(sizescsum(i),sizescsum(i+1)-1),1);
+        B3inv.at(i).diag()=1.0/sum(dpile.cols(sizescsum(i),sizescsum(i+1)-1),1);
         A1.push_back((B3.at(i)-(T.at(i)*B2.at(i))));
       }
     }
@@ -259,8 +246,8 @@ Rcpp::List maaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
         B1.at(i).diag()=(B1diag.subvec(sizescsum(i),sizescsum(i+1)-1)); 
         B1inv.at(i).diag()=(1.0/B1diag.subvec(sizescsum(i),sizescsum(i+1)-1));
         T.at(i)=B2.at(i).t()*B1inv.at(i);
-        B3.at(i).diag()=sum(dpile.cols(sizescsum(i),sizescsum(i+1)-1),1); //correct
-        B3inv.at(i).diag()=1.0/sum(dpile.cols(sizescsum(i),sizescsum(i+1)-1),1); //correct
+        B3.at(i).diag()=sum(dpile.cols(sizescsum(i),sizescsum(i+1)-1),1);
+        B3inv.at(i).diag()=1.0/sum(dpile.cols(sizescsum(i),sizescsum(i+1)-1),1);
         A1.at(i)=(B3.at(i)-(T.at(i)*B2.at(i)));
       }
     }
@@ -292,7 +279,6 @@ Rcpp::List maaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
     y=d.subvec(nc-m+1,nc-1);
     Y=diagmat(y)-(y*y.t())/cc;
     alpha=kron(-1*ones(N),y);
-    //currently xx is the problem as it seems
     xx=t2;
     for (int i=0;i<N;i++){
       xx.subvec((M+(i)*(m-1)),M-1+(m-1)*(i+1))= xx.subvec((M+(i)*(m-1)),M-1+(m-1)*(i+1))-T.at(i)*xx.subvec(sizescsum(i),sizescsum(i+1)-1);
@@ -300,7 +286,7 @@ Rcpp::List maaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
     xx.subvec(M,nr-2)= xx.subvec(M,nr-2)-(alpha*xx(nr-1)/cc);
     xx.subvec(0,M-1)=xx.subvec(0,M-1)/B1diag;
     xx(nr-1)/=cc;
-    if ((rel_gap>=(10^-4))&& (largesupp)){
+    if ((rel_gap>=(1e-4))&& (largesupp)){
       xx.subvec(M,nr-2)=DLRM_intern(B1,B2,B3inv,Y,sizescsum, xx.subvec(M,nr-2),N,m,U);
     }
     else{   
@@ -318,7 +304,6 @@ Rcpp::List maaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
     
 
 
-//    Rcout<<"End First Solve";
     dx=((constMat.t()*dp)%x+t1)/s;
     ds=-(s%dx+Rc)/x;
     eta=std::max(etaMin,1-mu);
@@ -330,10 +315,8 @@ Rcpp::List maaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
     Rc=(Rc+(dx%ds))-(sigma*mu);
     t1=x%Rd-Rc;
     t2=-(Rp+constMat*(t1/s));
-    //A1.at(0),B1.at(0),B2.at(0),B3.at(0),B3inv.at(0)
 
-    
-//    Rcout <<"Start Second Solve";
+
     //start second solve
     
     xx=t2;
@@ -343,7 +326,7 @@ Rcpp::List maaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
     xx.subvec(M,nr-2)= xx.subvec(M,nr-2)-(alpha*xx(nr-1)/cc);
     xx.subvec(0,M-1)=xx.subvec(0,M-1)/B1diag;
     xx(nr-1)/=cc;
-    if ((rel_gap>=(10^-4))&& (largesupp)){
+    if ((rel_gap>=(1e-4))&& (largesupp)){
       xx.subvec(M,nr-2)=DLRM_intern(B1,B2,B3inv,Y,sizescsum, xx.subvec(M,nr-2),N,m,U);
     }
     else{   
@@ -356,7 +339,7 @@ Rcpp::List maaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
     dp=xx;
 
     //end second solve
- //   Rcout<< "End Second Solve";
+
 
 
     dx=((constMat.t()*dp)%x+t1)/s;
@@ -366,7 +349,7 @@ Rcpp::List maaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
     alphax=std::min(1.0,eta*alphax);
     alphas=-1.0/std::min(arma::min(ds/s),-1.0);
     alphas=std::min(1.0,eta*alphas);
-    //alpha = std::min(alphax, alphas);
+
     
     x+=alphax*dx;
     s+=alphas*ds;
@@ -381,11 +364,8 @@ Rcpp::List maaipm_fixed_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::ve
     
 
     iter++;
-  //  Rcout<< x.subvec(L-m-1,L-1)<< std::endl;
   }
-//one iterations correct
-//afterwards wrong
-//Rcout<< iter ;  
+
 //return(Rcpp::List::create(x,T.at(0),dpile,B1diag,d,t1,t2,Rc,Rd,Rp,s,p,mu,relResidual,dx,ds,dp,muaff));
   
 
@@ -402,7 +382,6 @@ Rcpp::List maaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::vec
   omp_set_num_threads(threads);
 #endif
   int iter=0;
-  double N2=N;
   double m2=m;
   const int Mm=M*m;
   double bc = 1+std::max(sqrt(sqnorm(costvec)), sqrt(sqnorm(b)));
@@ -411,12 +390,7 @@ Rcpp::List maaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::vec
   arma::vec Rd=constMat.t()*p+s-costvec;
   arma::vec Rp=constMat*x-b;
   double relResidual=(sqnorm(Rd)+sqnorm(Rp)+sqnorm(Rc))/bc;
-  double relResidual_old = relResidual ;
-  double relResidual_old_old = relResidual_old;
   double rel_gap = 1e15;
-  double rel_gap_old= rel_gap;
-  double rel_gap_old_old = rel_gap_old;
-  double optval=0;
   const double maxDiag=5.e+14;
   const int data_dim=support.n_rows;
   arma::vec d=x/s;
@@ -475,35 +449,30 @@ Rcpp::List maaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::vec
     
     d=x/s;
     while((iter<maxIter) & ((mu>thresh)| (rel_gap>thresh)| (relResidual>thresh))){
-      relResidual_old_old = relResidual_old;
-      relResidual_old = relResidual ;
-      rel_gap_old_old = rel_gap_old;
-      rel_gap_old = rel_gap;
-      
+
       rel_gap=(accu(costvec%x) - accu(b%p))/(abs(accu(b%p))+abs(accu(costvec%x))+1);
-      optval=accu(costvec%x)/N2;
+      //optval=accu(costvec%x)/N2;
       
-      d=x/s; //correct
-      d.elem(find(d>=maxDiag)).fill(maxDiag); //correct
-      t1=x%Rd-Rc; //correct
-      t2=-(Rp+constMat*(t1/s)); //correct
-      //    Rcout <<"start first solve";
+      d=x/s; 
+      d.elem(find(d>=maxDiag)).fill(maxDiag);
+      t1=x%Rd-Rc; 
+      t2=-(Rp+constMat*(t1/s));
       //start first solve
-      dpile=reshape(d.subvec(0,(Mm-1)),m,M); //correct
-      B1diag=(sum(dpile,0)).t(); //correct
-      dpile.shed_row(0); //correct
+      dpile=reshape(d.subvec(0,(Mm-1)),m,M); 
+      B1diag=(sum(dpile,0)).t();
+      dpile.shed_row(0); 
       if (iter==0){
         for (int i=0;i<N;i++){
-          B2.push_back((dpile.cols(sizescsum(i),sizescsum(i+1)-1)).t()); //correct
-          B1.push_back(speye(sizes(i),sizes(i))); //correct
+          B2.push_back((dpile.cols(sizescsum(i),sizescsum(i+1)-1)).t()); 
+          B1.push_back(speye(sizes(i),sizes(i))); 
           B1inv.push_back(speye(sizes(i),sizes(i)));
-          B1.at(i).diag()=(B1diag.subvec(sizescsum(i),sizescsum(i+1)-1)); //correct
+          B1.at(i).diag()=(B1diag.subvec(sizescsum(i),sizescsum(i+1)-1));
           B1inv.at(i).diag()=(1.0/B1diag.subvec(sizescsum(i),sizescsum(i+1)-1)); 
           T.push_back(B2.at(i).t()*B1inv.at(i)); 
-          B3.push_back(speye(m-1,m-1)); //Correct
-          B3inv.push_back(speye(m-1,m-1)); //correct
-          B3.at(i).diag()=sum(dpile.cols(sizescsum(i),sizescsum(i+1)-1),1); //correct
-          B3inv.at(i).diag()=1.0/sum(dpile.cols(sizescsum(i),sizescsum(i+1)-1),1); //correct
+          B3.push_back(speye(m-1,m-1)); 
+          B3inv.push_back(speye(m-1,m-1)); 
+          B3.at(i).diag()=sum(dpile.cols(sizescsum(i),sizescsum(i+1)-1),1);
+          B3inv.at(i).diag()=1.0/sum(dpile.cols(sizescsum(i),sizescsum(i+1)-1),1); 
           A1.push_back((B3.at(i)-(T.at(i)*B2.at(i))));
         }
       }
@@ -514,8 +483,8 @@ Rcpp::List maaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::vec
           B1.at(i).diag()=(B1diag.subvec(sizescsum(i),sizescsum(i+1)-1)); 
           B1inv.at(i).diag()=(1.0/B1diag.subvec(sizescsum(i),sizescsum(i+1)-1));
           T.at(i)=B2.at(i).t()*B1inv.at(i);
-          B3.at(i).diag()=sum(dpile.cols(sizescsum(i),sizescsum(i+1)-1),1); //correct
-          B3inv.at(i).diag()=1.0/sum(dpile.cols(sizescsum(i),sizescsum(i+1)-1),1); //correct
+          B3.at(i).diag()=sum(dpile.cols(sizescsum(i),sizescsum(i+1)-1),1); 
+          B3inv.at(i).diag()=1.0/sum(dpile.cols(sizescsum(i),sizescsum(i+1)-1),1); 
           A1.at(i)=(B3.at(i)-(T.at(i)*B2.at(i)));
         }
       }
@@ -523,7 +492,7 @@ Rcpp::List maaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::vec
       y=d.subvec(nc-m+1,nc-1);
       Y=diagmat(y)-(y*y.t())/cc;
       alpha=kron(-1*ones(N),y);
-      //currently xx is the problem as it seems
+
       xx=t2;
       for (int i=0;i<N;i++){
         xx.subvec((M+(i)*(m-1)),M-1+(m-1)*(i+1))= xx.subvec((M+(i)*(m-1)),M-1+(m-1)*(i+1))-T.at(i)*xx.subvec(sizescsum(i),sizescsum(i+1)-1);
@@ -531,7 +500,7 @@ Rcpp::List maaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::vec
       xx.subvec(M,nr-2)= xx.subvec(M,nr-2)-(alpha*xx(nr-1)/cc);
       xx.subvec(0,M-1)=xx.subvec(0,M-1)/B1diag;
       xx(nr-1)/=cc;
-      if ((rel_gap>=(10^-4))&& (largesupp)){
+      if ((rel_gap>=(1e-4))&& (largesupp)){
         xx.subvec(M,nr-2)=DLRM_intern(B1,B2,B3inv,Y,sizescsum, xx.subvec(M,nr-2),N,m,U);
       }
       else{   
@@ -547,9 +516,7 @@ Rcpp::List maaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::vec
       
       //end first solve
       
-      
-      
-      //    Rcout<<"End First Solve";
+
       dx=((constMat.t()*dp)%x+t1)/s;
       ds=-(s%dx+Rc)/x;
       eta=std::max(etaMin,1-mu);
@@ -561,10 +528,8 @@ Rcpp::List maaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::vec
       Rc=(Rc+(dx%ds))-(sigma*mu);
       t1=x%Rd-Rc;
       t2=-(Rp+constMat*(t1/s));
-      //A1.at(0),B1.at(0),B2.at(0),B3.at(0),B3inv.at(0)
-      
-      
-      //    Rcout <<"Start Second Solve";
+
+
       //start second solve
       
       xx=t2;
@@ -574,7 +539,7 @@ Rcpp::List maaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::vec
       xx.subvec(M,nr-2)= xx.subvec(M,nr-2)-(alpha*xx(nr-1)/cc);
       xx.subvec(0,M-1)=xx.subvec(0,M-1)/B1diag;
       xx(nr-1)/=cc;
-      if ((rel_gap>=(10^-4))&& (largesupp)){
+      if ((rel_gap>=(1e-4))&& (largesupp)){
         xx.subvec(M,nr-2)=DLRM_intern(B1,B2,B3inv,Y,sizescsum, xx.subvec(M,nr-2),N,m,U);
       }
       else{   
@@ -587,8 +552,7 @@ Rcpp::List maaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::vec
       dp=xx;
       
       //end second solve
-      //   Rcout<< "End Second Solve";
-      
+
       
       dx=((constMat.t()*dp)%x+t1)/s;
       ds=-(s%dx+Rc)/x;
@@ -597,7 +561,7 @@ Rcpp::List maaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::vec
       alphax=std::min(1.0,eta*alphax);
       alphas=-1.0/std::min(arma::min(ds/s),-1.0);
       alphas=std::min(1.0,eta*alphas);
-      //alpha = std::min(alphax, alphas);
+
       
       x+=alphax*dx;
       s+=alphas*ds;
@@ -623,10 +587,7 @@ Rcpp::List maaipm_free_cpp(arma::vec p, arma::vec s, arma::vec x,const arma::vec
   }
   support=(fullsupport*X.t())/tmp;
   costvec.subvec(0,M*m-1)=vectorise(dist_mat(support,fullsupport));
-  //Rcout <<accu(costvec%x)/N2<<std::endl;
-  // for (int i=0;i<N;i++){
-  //   costvec.subvec(sizescsum(i)*m,sizescsum(i+1)-1)=dist_mat(support,);
-  // }
+
   outer_iter++;
   }
   

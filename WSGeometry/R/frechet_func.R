@@ -15,12 +15,15 @@
 #' @return A real number specifying the Frechet value of the input object for the given dataset.
 #' @export
 frechet_func<-function(bary,data){
+  if (!requireNamespace("transport", quietly = TRUE)) {
+    stop("The package transport is required to use this function.")
+  }
   type<-type_check(bary)
   bary<-process_data(bary,type)
-  bary<-transport::wpp(bary$positions,bary$weights)
+  bary<-wpp(bary$positions,bary$weights)
   data.types<-lapply(data,type_check)
   data<-mapply(process_data,data,data.types,SIMPLIFY = FALSE)
-  data<-mapply(transport::wpp,lapply(data,"[[",1),lapply(data,"[[",2),SIMPLIFY = FALSE)
+  data<-mapply(wpp,lapply(data,"[[",1),lapply(data,"[[",2),SIMPLIFY = FALSE)
   N<-length(data)
   val<-0
   for (k in 1:N){

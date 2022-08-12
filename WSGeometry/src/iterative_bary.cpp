@@ -58,7 +58,6 @@ arma::mat gen_cost(const arma::mat A,const arma::mat B){
 
 //[[Rcpp::export]]
 Rcpp::List wsbary_cxx_armaP(const Rcpp::List weightsR,arma::mat positions1,const Rcpp::List positionssetR,const arma::mat frechet_weights,const bool fixed_support,const int maxIter,const int weights_maxIter,const int pos_maxIter ,const double stepsize,const double thresh,bool headstart, const int headstartlength, int threads) {
-  double n=weightsR.size();
   int n2=weightsR.size();
   const double m=positions1.n_rows;
   arma::mat a=arma::ones(m,1)/m;
@@ -95,8 +94,6 @@ Rcpp::List wsbary_cxx_armaP(const Rcpp::List weightsR,arma::mat positions1,const
   int pos_iter=0;
   int head_iter=0;
   int head_i;
-  int L;
-  int dataCount=0;
 #ifdef _OPENMP
   omp_set_num_threads(threads);
 #endif
@@ -116,24 +113,6 @@ Rcpp::List wsbary_cxx_armaP(const Rcpp::List weightsR,arma::mat positions1,const
     
     //Weights Headstart
     if (weights_maxIter>0){
-      if (headstart==TRUE){
-        while (head_iter<(headstartlength*n2)){
-          beta=(head_iter+2.0)/2.0;
-          a=(1-(1/beta))*ahat+((1/beta)*atilde);
-          head_i=index_cxx(frechet_weights,rand_cxx());
-          positions2=Positions.at(head_i);
-          b=Weights.at(head_i);
-          duals.col(head_i)=transport_network_dual_arma(a,b,Cmat);
-          s(head_i,0)=arma::sum(duals.col(head_i))/m;
-          duals.col(head_i)=duals.col(head_i)-(arma::ones(m,1)*s(head_i,0));
-          alpha=duals.col(head_i);
-          atilde=atilde%exp(((-1)*(beta)*alpha));
-          atsum=accu(atilde);
-          atilde=atilde/atsum;
-          ahat=(1-(1/beta))*ahat+(atilde*(1/beta));
-          head_iter++;
-        }
-      }
       headstart=FALSE;
       head_iter=0;
       //Weights Iterations
@@ -219,29 +198,6 @@ Rcpp::List wsbary_cxx_armaP(const Rcpp::List weightsR,arma::mat positions1,const
     
     //Weights Headstart
     if (weights_maxIter>0){
-      if (headstart==TRUE){
-        while (head_iter<(headstartlength*n2)){
-          beta=(head_iter+2)/2;
-          a=(1-(1/beta))*ahat+((1/beta)*atilde);
-          head_i=index_cxx(frechet_weights,rand_cxx());
-          positions2=Positions.at(head_i);
-          b=Weights.at(head_i);
-          z=arma::diagvec((positionsBary*arma::trans(positionsBary)));
-          x=arma::diagvec(positions2*arma::trans(positions2));
-          onesB=arma::ones(1,positions2.n_rows);
-          onesA=arma::ones(positionsBary.n_rows,1);
-          Cmat=(z*onesB+onesA*arma::trans(x)-(2.0*positionsBary*arma::trans(positions2)));
-          duals.col(head_i)=transport_network_dual_arma(a,b,Cmat);
-          s(head_i,0)=arma::sum(duals.col(head_i))/m;
-          duals.col(head_i)=duals.col(head_i)-(arma::ones(m,1)*s(head_i,0));
-          alpha=duals.col(head_i);
-          atilde=atilde%exp(((-1)*(beta)*alpha));
-          atsum=accu(atilde);
-          atilde=atilde/atsum;
-          ahat=(1-(1/beta))*ahat+(atilde*(1/beta));
-          head_iter++;
-        }
-      }
       headstart=FALSE;
       head_iter=0;
       //Weights Iterations
@@ -287,4 +243,91 @@ Rcpp::List wsbary_cxx_armaP(const Rcpp::List weightsR,arma::mat positions1,const
     iter++;
   }
   return(Rcpp::List::create(positionsBary,a,iter));
+}
+
+
+
+//[[Rcpp::export]]
+Rcpp::List krbary_subgrad_cxx(const Rcpp::List weightsR,const Rcpp::List costMatsR,const arma::mat frechet_weights,const int maxIter ,const double stepsize,const double thresh,bool headstart, const int headstartlength, int threads) {
+  int n2=weightsR.size();
+  vector<arma::mat> costMats;
+  vector<arma::mat> Weights;
+  for (int i=0;i<n2;i++){
+    costMats.push_back((Rcpp::as<arma::mat>(costMatsR.at(i))));
+    Weights.push_back((Rcpp::as<arma::mat>(weightsR.at(i))));
+  }
+  const double m=(costMats.at(0)).n_rows;
+  arma::mat a=arma::ones(m,1)/m;
+  arma::mat duals=arma::zeros(m,n2);
+  arma::mat s=arma::zeros(n2,1);
+  arma::mat ahat=arma::ones(m,1)/m;
+  arma::mat atilde=arma::ones(m,1)/m;
+  arma::mat alpha=arma::ones(m,1)/m;
+  arma::mat aold=arma::ones(m,1)*100.0;
+  arma::mat achange=arma::zeros(1,1);
+  arma::mat pchange=arma::zeros(1,1);
+  arma::mat z;
+  arma::mat x;
+  arma::mat onesA;
+  arma::mat onesB;
+  arma::mat Cmat;
+  arma::mat positions2;
+  arma::mat b;
+  arma::mat frechet=arma::diagmat(frechet_weights);
+  arma::mat aVeryOld=arma::ones(m,1)*100.0;
+  Rcpp::List subWeights;
+  arma::mat costMat;
+  double beta=stepsize;
+  double atsum;
+  int weights_iter=0;
+  int head_iter=0;
+  int head_i;
+#ifdef _OPENMP
+  omp_set_num_threads(threads);
+#endif
+  
+  if (headstart==TRUE){
+    while (head_iter<(headstartlength*n2)){
+      beta=(stepsize*head_iter+2.0)/2.0;
+      a=(1-(1/beta))*ahat+((1/beta)*atilde);
+      head_i=index_cxx(frechet_weights,rand_cxx());
+      costMat=costMats.at(head_i);
+      b=Weights.at(head_i);
+      duals.col(head_i)=transport_network_dual_arma(a,b,costMat);
+      s(head_i,0)=arma::sum(duals.col(head_i))/m;
+      duals.col(head_i)=duals.col(head_i)-(arma::ones(m,1)*s(head_i,0));
+      alpha=duals.col(head_i);
+      atilde=atilde%exp(((-1)*(beta)*alpha));
+      atsum=accu(atilde);
+      atilde=atilde/atsum;
+      ahat=(1-(1/beta))*ahat+(atilde*(1/beta));
+      head_iter++;
+    }
+  }
+  
+  
+  achange(0)=10000;
+  weights_iter=0;
+  while( (weights_iter<maxIter) && (achange(0)>thresh)){
+    beta=(stepsize*weights_iter+2.0)/2.0;
+    a=(1-(1/beta))*ahat+((1/beta)*atilde);
+    a=a+(arma::ones(m,1)*0.00000000001);
+    a=a/accu(a);
+#pragma omp parallel for
+    for (int i=0; i<n2;i++){
+      duals.col(i)=transport_network_dual_arma(a,Weights.at(i),costMats.at(i));
+      s(i,0)=arma::sum(duals.col(i))/m;
+      duals.col(i)=duals.col(i)-(arma::ones(m,1)*s(i,0));
+    }
+    alpha=arma::sum(duals*frechet,1);
+    atilde=atilde%exp(((-1)*beta*alpha));
+    atsum=accu(atilde);
+    atilde=atilde/atsum;
+    ahat=(1-(1/beta))*ahat+(atilde*(1/beta));
+    achange=arma::sum(abs((a-aold)));
+    aold=a;
+    weights_iter++;
+  }
+  
+  return(Rcpp::List::create(a,weights_iter));
 }

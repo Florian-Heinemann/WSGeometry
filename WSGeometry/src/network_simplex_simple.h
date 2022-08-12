@@ -470,7 +470,8 @@ namespace lemon {
 				Cost min_val = 0;
 			  ArcsType N = 1;
         #ifdef _OPENMP
-			    N = omp_get_max_threads();
+			    //N = omp_get_max_threads();
+			    N=1;
         #endif
 				std::vector<Cost> minArray(N, 0);
 				std::vector<ArcsType> arcId(N);

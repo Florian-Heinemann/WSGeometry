@@ -29,6 +29,10 @@ wsbary_cxx_armaP <- function(weightsR, positions1, positionssetR, frechet_weight
     .Call('_WSGeometry_wsbary_cxx_armaP', PACKAGE = 'WSGeometry', weightsR, positions1, positionssetR, frechet_weights, fixed_support, maxIter, weights_maxIter, pos_maxIter, stepsize, thresh, headstart, headstartlength, threads)
 }
 
+krbary_subgrad_cxx <- function(weightsR, costMatsR, frechet_weights, maxIter, stepsize, thresh, headstart, headstartlength, threads) {
+    .Call('_WSGeometry_krbary_subgrad_cxx', PACKAGE = 'WSGeometry', weightsR, costMatsR, frechet_weights, maxIter, stepsize, thresh, headstart, headstartlength, threads)
+}
+
 maaipm_fixed_cpp <- function(p, s, x, b, costvec, constMat, N, m, M, sizes, sizescsum, nr, nc, U, maxIter, thresh, threads) {
     .Call('_WSGeometry_maaipm_fixed_cpp', PACKAGE = 'WSGeometry', p, s, x, b, costvec, constMat, N, m, M, sizes, sizescsum, nr, nc, U, maxIter, thresh, threads)
 }
