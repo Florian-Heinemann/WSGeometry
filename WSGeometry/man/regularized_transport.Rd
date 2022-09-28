@@ -11,7 +11,8 @@ regularized_transport(
   demandDivList = list("KL", 0.5),
   epsVector = 0.001,
   maxIteration = 5000,
-  tol = 1e-07,
+  scalingTol = 0.001,
+  finalTol = 1e-06,
   exp = 1,
   p = 2,
   costMatrix = NULL,
@@ -55,9 +56,10 @@ This may be required for convergence if epsilon is small. The default value is \
 
 \item{maxIteration}{(optional) The maximum number of algorithm iterations. The default value is \code{5000}.}
 
-\item{tol}{(optional) A numeric value. If the change of the dual variables from one step to the next is smaller than this value the algorithm is 
-considered to be converged. If the primal-dual-gap returned is very large even though the maximal number of iterations is not reached, this value may be too large. 
-The default value is \code{1e-7}.}
+\item{scalingTol}{(optional) A numeric value. If the change of the dual variables from one step to the next is smaller than this value times epsilon, the algorithm
+moves on to the next epsilon. The default value is \code{1e-3}.}
+
+\item{finalTol}{(optional) This is used instead of \code{scalingTol} for the last epsilon only. The default value is \code{1e-6}.}
 
 \item{exp}{(optional) The exponent applied to the cost function. Default value is \code{1}.}
 
@@ -68,7 +70,7 @@ Default value is \code{NULL} for which the cost matrix is calculated based on \c
 
 \item{algorithm}{(optinal) Set to \code{"sinkhorn"} to use the Sinkhorn algorithm. Default value is \code{"scaling"}. Only 
 these two algorithms are available. Usually \code{"scaling"} is faster but may be less numerically stable, especially for small epsilon.
-Also note that \code{"sinkhorn"} will not create / destroy mass where the supply / demand is zero.}
+Sinkhorn uses the product measure of supply and demand as reference for regularization whereas scaling uses constant 1.}
 
 \item{indicatorSlack}{(optional) amount of violation to allow in indicator functions before returning infinity. 
 This is needed for numeric stability and due to finite number of iterations (default is \code{1e-6}).}

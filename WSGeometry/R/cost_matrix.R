@@ -10,7 +10,7 @@
 #' @return The distance matrix between the points. The rows correspond to the points in x, the columns to the
 #' points in y
 #' @noRd
-cost_matrix <- function(x, y, exp = 1, p = 2, wfr = FALSE) {
+cost_matrix <- function(x, y, exp = 1, p = 2, wfr = FALSE, delta = 1) {
     if (is.null(ncol(x))) {
         x <- matrix(x, ncol = 1)
     }
@@ -37,7 +37,7 @@ cost_matrix <- function(x, y, exp = 1, p = 2, wfr = FALSE) {
     }
     
     if (wfr) {
-        cMatrix <- -2 * log(cospi(pmin(cMatrix / pi, 1 / 2)))
+        cMatrix <- -log(cos(pmin(cMatrix / (2 * delta), 0.5 * pi))**2)
     }
     
     return(cMatrix)

@@ -12,8 +12,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // StabilizedScaling_Rcpp
-Rcpp::List StabilizedScaling_Rcpp(const arma::mat& cost_matrix, const arma::vec& supply, const arma::vec& demand, int supply_div_type, int demand_div_type, const arma::vec supply_div_parameters, const arma::vec demand_div_parameters, int iter_max, const arma::vec& epsvec, double tol, int check_interval, double indicator_slack, double clamp);
-RcppExport SEXP _WSGeometry_StabilizedScaling_Rcpp(SEXP cost_matrixSEXP, SEXP supplySEXP, SEXP demandSEXP, SEXP supply_div_typeSEXP, SEXP demand_div_typeSEXP, SEXP supply_div_parametersSEXP, SEXP demand_div_parametersSEXP, SEXP iter_maxSEXP, SEXP epsvecSEXP, SEXP tolSEXP, SEXP check_intervalSEXP, SEXP indicator_slackSEXP, SEXP clampSEXP) {
+Rcpp::List StabilizedScaling_Rcpp(const arma::mat& cost_matrix, const arma::vec& supply, const arma::vec& demand, int supply_div_type, int demand_div_type, const arma::vec supply_div_parameters, const arma::vec demand_div_parameters, int iter_max, const arma::vec& epsvec, double scaling_tol, double final_tol, int check_interval, double indicator_slack, double clamp);
+RcppExport SEXP _WSGeometry_StabilizedScaling_Rcpp(SEXP cost_matrixSEXP, SEXP supplySEXP, SEXP demandSEXP, SEXP supply_div_typeSEXP, SEXP demand_div_typeSEXP, SEXP supply_div_parametersSEXP, SEXP demand_div_parametersSEXP, SEXP iter_maxSEXP, SEXP epsvecSEXP, SEXP scaling_tolSEXP, SEXP final_tolSEXP, SEXP check_intervalSEXP, SEXP indicator_slackSEXP, SEXP clampSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -26,17 +26,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec >::type demand_div_parameters(demand_div_parametersSEXP);
     Rcpp::traits::input_parameter< int >::type iter_max(iter_maxSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type epsvec(epsvecSEXP);
-    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< double >::type scaling_tol(scaling_tolSEXP);
+    Rcpp::traits::input_parameter< double >::type final_tol(final_tolSEXP);
     Rcpp::traits::input_parameter< int >::type check_interval(check_intervalSEXP);
     Rcpp::traits::input_parameter< double >::type indicator_slack(indicator_slackSEXP);
     Rcpp::traits::input_parameter< double >::type clamp(clampSEXP);
-    rcpp_result_gen = Rcpp::wrap(StabilizedScaling_Rcpp(cost_matrix, supply, demand, supply_div_type, demand_div_type, supply_div_parameters, demand_div_parameters, iter_max, epsvec, tol, check_interval, indicator_slack, clamp));
+    rcpp_result_gen = Rcpp::wrap(StabilizedScaling_Rcpp(cost_matrix, supply, demand, supply_div_type, demand_div_type, supply_div_parameters, demand_div_parameters, iter_max, epsvec, scaling_tol, final_tol, check_interval, indicator_slack, clamp));
     return rcpp_result_gen;
 END_RCPP
 }
 // Sinkhorn_Rcpp
-Rcpp::List Sinkhorn_Rcpp(const arma::mat& cost_matrix, const arma::vec& supply, const arma::vec& demand, int supply_div_type, int demand_div_type, const arma::vec supply_div_parameters, const arma::vec demand_div_parameters, int iter_max, const arma::vec& epsvec, double tol, int thread_cnt, int max_lines_per_work, double indicator_slack);
-RcppExport SEXP _WSGeometry_Sinkhorn_Rcpp(SEXP cost_matrixSEXP, SEXP supplySEXP, SEXP demandSEXP, SEXP supply_div_typeSEXP, SEXP demand_div_typeSEXP, SEXP supply_div_parametersSEXP, SEXP demand_div_parametersSEXP, SEXP iter_maxSEXP, SEXP epsvecSEXP, SEXP tolSEXP, SEXP thread_cntSEXP, SEXP max_lines_per_workSEXP, SEXP indicator_slackSEXP) {
+Rcpp::List Sinkhorn_Rcpp(const arma::mat& cost_matrix, const arma::vec& supply, const arma::vec& demand, int supply_div_type, int demand_div_type, const arma::vec supply_div_parameters, const arma::vec demand_div_parameters, int iter_max, const arma::vec& epsvec, double scaling_tol, double final_tol, int thread_cnt, int max_lines_per_work, double indicator_slack);
+RcppExport SEXP _WSGeometry_Sinkhorn_Rcpp(SEXP cost_matrixSEXP, SEXP supplySEXP, SEXP demandSEXP, SEXP supply_div_typeSEXP, SEXP demand_div_typeSEXP, SEXP supply_div_parametersSEXP, SEXP demand_div_parametersSEXP, SEXP iter_maxSEXP, SEXP epsvecSEXP, SEXP scaling_tolSEXP, SEXP final_tolSEXP, SEXP thread_cntSEXP, SEXP max_lines_per_workSEXP, SEXP indicator_slackSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -49,11 +50,12 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec >::type demand_div_parameters(demand_div_parametersSEXP);
     Rcpp::traits::input_parameter< int >::type iter_max(iter_maxSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type epsvec(epsvecSEXP);
-    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< double >::type scaling_tol(scaling_tolSEXP);
+    Rcpp::traits::input_parameter< double >::type final_tol(final_tolSEXP);
     Rcpp::traits::input_parameter< int >::type thread_cnt(thread_cntSEXP);
     Rcpp::traits::input_parameter< int >::type max_lines_per_work(max_lines_per_workSEXP);
     Rcpp::traits::input_parameter< double >::type indicator_slack(indicator_slackSEXP);
-    rcpp_result_gen = Rcpp::wrap(Sinkhorn_Rcpp(cost_matrix, supply, demand, supply_div_type, demand_div_type, supply_div_parameters, demand_div_parameters, iter_max, epsvec, tol, thread_cnt, max_lines_per_work, indicator_slack));
+    rcpp_result_gen = Rcpp::wrap(Sinkhorn_Rcpp(cost_matrix, supply, demand, supply_div_type, demand_div_type, supply_div_parameters, demand_div_parameters, iter_max, epsvec, scaling_tol, final_tol, thread_cnt, max_lines_per_work, indicator_slack));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -334,8 +336,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_WSGeometry_StabilizedScaling_Rcpp", (DL_FUNC) &_WSGeometry_StabilizedScaling_Rcpp, 13},
-    {"_WSGeometry_Sinkhorn_Rcpp", (DL_FUNC) &_WSGeometry_Sinkhorn_Rcpp, 13},
+    {"_WSGeometry_StabilizedScaling_Rcpp", (DL_FUNC) &_WSGeometry_StabilizedScaling_Rcpp, 14},
+    {"_WSGeometry_Sinkhorn_Rcpp", (DL_FUNC) &_WSGeometry_Sinkhorn_Rcpp, 14},
     {"_WSGeometry_bary_sinkhorn_arma", (DL_FUNC) &_WSGeometry_bary_sinkhorn_arma, 7},
     {"_WSGeometry_rand_cxx", (DL_FUNC) &_WSGeometry_rand_cxx, 0},
     {"_WSGeometry_index_cxx", (DL_FUNC) &_WSGeometry_index_cxx, 2},

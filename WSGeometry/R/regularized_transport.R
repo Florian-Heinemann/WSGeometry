@@ -1,8 +1,4 @@
 
-
-
-
-
 #' @title Regularized Unbalanced Optimal Transport
 #' 
 #' @description  Solving regularized unbalanced optimal transport problems.
@@ -68,16 +64,16 @@
 #' @param epsVector (optional) A numeric value or vector holding the regularization parameter. If a vector is given, epsilon scaling will be performed. 
 #' This may be required for convergence if epsilon is small. The default value is \code{1e-3}.
 #' @param maxIteration (optional) The maximum number of algorithm iterations. The default value is \code{5000}.
-#' @param tol (optional) A numeric value. If the change of the dual variables from one step to the next is smaller than this value the algorithm is 
-#' considered to be converged. If the primal-dual-gap returned is very large even though the maximal number of iterations is not reached, this value may be too large. 
-#' The default value is \code{1e-7}.
+#' @param scalingTol (optional) A numeric value. If the change of the dual variables from one step to the next is smaller than this value times epsilon, the algorithm
+#' moves on to the next epsilon. The default value is \code{1e-3}.
+#' @param finalTol (optional) This is used instead of \code{scalingTol} for the last epsilon only. The default value is \code{1e-6}.
 #' @param exp (optional) The exponent applied to the cost function. Default value is \code{1}.
 #' @param p (optional) The parameter for calculating the \eqn{L_p}{L_p} cost. Can be a positive real number or Inf. Default value is 2 calculating the euclidean distance.
 #' @param costMatrix (optinal) A cost matrix for transport between the supply and demand points. 
 #' Default value is \code{NULL} for which the cost matrix is calculated based on \code{supplyList[[2]]}, \code{demandList[[2]]}, \code{exp}, \code{p} and \code{wfr}.
 #' @param algorithm (optinal) Set to \code{"sinkhorn"} to use the Sinkhorn algorithm. Default value is \code{"scaling"}. Only 
 #' these two algorithms are available. Usually \code{"scaling"} is faster but may be less numerically stable, especially for small epsilon.
-#' Also note that \code{"sinkhorn"} will not create / destroy mass where the supply / demand is zero.
+#' Sinkhorn uses the product measure of supply and demand as reference for regularization whereas scaling uses constant 1.
 #' @param indicatorSlack (optional) amount of violation to allow in indicator functions before returning infinity. 
 #' This is needed for numeric stability and due to finite number of iterations (default is \code{1e-6}).
 #' @param threadCount (optional) number of threads to use for Sinkhorn algorithm (default: 1 if problem is small, maximal number available if problem is large); 
@@ -126,7 +122,7 @@
 #'
 #' @export
 regularized_transport <- function(supplyList, demandList, supplyDivList = list("KL", 0.5), demandDivList = list("KL", 0.5), 
-                                  epsVector = 1e-3, maxIteration = 5000, tol = 1e-7, exp = 1, p = 2,
+                                  epsVector = 1e-3, maxIteration = 5000, scalingTol = 1e-3, finalTol = 1e-6, exp = 1, p = 2,
                                   costMatrix = NULL, algorithm = "scaling", indicatorSlack = 1e-6,
                                   threadCount = -1, maxLinesPerWork = 5) {
     
@@ -208,15 +204,16 @@ regularized_transport <- function(supplyList, demandList, supplyDivList = list("
         res <- Sinkhorn_Rcpp(cost_matrix = costMatrix, supply = supply, demand = demand,
                              supply_div_type = supplyDivType, demand_div_type = demandDivType, 
                              supply_div_parameters = supplyDivParameters, demand_div_parameters = demandDivParameters,
-                             iter_max = maxIteration, epsvec = epsVector, tol = tol, indicator_slack = indicatorSlack,
-                             thread_cnt = threadCount, max_lines_per_work = maxLinesPerWork)
+                             iter_max = maxIteration, epsvec = epsVector, scaling_tol = scalingTol, final_tol = finalTol,
+                             indicator_slack = indicatorSlack, thread_cnt = threadCount, max_lines_per_work = maxLinesPerWork)
         
     } else if (algorithm == "scaling") {
         
         res <- StabilizedScaling_Rcpp(cost_matrix = costMatrix, supply = supply, demand = demand,
                                       supply_div_type = supplyDivType, demand_div_type = demandDivType, 
                                       supply_div_parameters = supplyDivParameters, demand_div_parameters = demandDivParameters,
-                                      iter_max = maxIteration, epsvec = epsVector, tol = tol, indicator_slack = indicatorSlack)
+                                      iter_max = maxIteration, epsvec = epsVector, scaling_tol = scalingTol, final_tol = finalTol, 
+                                      indicator_slack = indicatorSlack)
         
     }
     

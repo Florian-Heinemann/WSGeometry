@@ -83,7 +83,8 @@ Rcpp::List Sinkhorn_Rcpp(const arma::mat &cost_matrix,
                          const arma::vec demand_div_parameters,
                          int iter_max,
                          const arma::vec &epsvec,
-                         double tol,
+                         double scaling_tol,
+                         double final_tol,
                          int thread_cnt = -1,
                          int max_lines_per_work = 5,
                          double indicator_slack = 1e-6) {
@@ -140,6 +141,7 @@ Rcpp::List Sinkhorn_Rcpp(const arma::mat &cost_matrix,
         pi = arma::exp(pi / epsi);
         pi.each_row() %= demand.t();
         pi.each_col() %= supply;
+        pi.replace(arma::datum::nan, 0); // NaN may come if exp overflows and demand * supply == 0
         return pi;
     };
     
@@ -150,7 +152,7 @@ Rcpp::List Sinkhorn_Rcpp(const arma::mat &cost_matrix,
             for (int j = 0; j < (int)demand.size(); j++) {
                 sd = supply_dual[i] + demand_dual[j];
                 c = cost_matrix(i, j);
-                t0 = std::exp((sd - c) * epsi_inv) * (sd - epsi) + epsi * std::exp(-c * epsi_inv);
+                t0 = std::exp((sd - c) * epsi_inv) * (sd - epsi) + epsi;
                 t1 = supply[i] * demand[j];
                 res += (t0 && t1) ? t0 * t1 : 0;
             }
@@ -170,7 +172,7 @@ Rcpp::List Sinkhorn_Rcpp(const arma::mat &cost_matrix,
             for (int j = 0; j < (int)demand.size(); j++) {
                 sd = (supply_dual[i] + demand_dual[j]);
                 c = cost_matrix(i, j);
-                t0 = std::exp((sd - c) * epsi_inv) - std::exp(-c * epsi_inv);
+                t0 = std::exp((sd - c) * epsi_inv) - 1;
                 t1 = supply[i] * demand[j];
                 res += (t0 && t1) ? epsi * t0 * t1 : 0;
             }
@@ -182,6 +184,7 @@ Rcpp::List Sinkhorn_Rcpp(const arma::mat &cost_matrix,
     };
     
     double last_step_size = std::numeric_limits<double>::infinity();
+    double tol = (epsind == epsvec.size() - 1 ? final_tol : scaling_tol);
     
     thread_pool pool(thread_cnt);
     
@@ -228,7 +231,7 @@ Rcpp::List Sinkhorn_Rcpp(const arma::mat &cost_matrix,
         last_step_size = std::max(arma::max(arma::abs(supply_dual_old - supply_dual)),
                                   arma::max(arma::abs(demand_dual_old - demand_dual)));
         
-        if (last_step_size < tol || 
+        if (last_step_size < tol * epsi || 
             k / (double)iter_max > (epsind + 1) / (double)epsvec.size() ||
             k == iter_max) {
             
@@ -239,6 +242,7 @@ Rcpp::List Sinkhorn_Rcpp(const arma::mat &cost_matrix,
                 break;
             } else {
                 epsi = epsvec[++epsind];
+                tol = (epsind == epsvec.size() - 1 ? final_tol : scaling_tol);
             }
         }
     }

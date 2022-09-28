@@ -14,7 +14,8 @@ Rcpp::List StabilizedScaling_Rcpp(const arma::mat &cost_matrix,
                                   const arma::vec demand_div_parameters,
                                   int iter_max,
                                   const arma::vec &epsvec,
-                                  double tol,
+                                  double scaling_tol,
+                                  double final_tol,
                                   int check_interval = 1,
                                   double indicator_slack = 1e-6,
                                   double clamp = 1e100) {
@@ -82,7 +83,7 @@ Rcpp::List StabilizedScaling_Rcpp(const arma::mat &cost_matrix,
             for (int j = 0; j < (int)demand.size(); j++) {
                 sd = supply_log[i] + demand_log[j];
                 c = cost_matrix(i, j);
-                t0 = std::exp((sd - c) * epsi_inv) * (sd - epsi) + epsi * std::exp(-c * epsi_inv);
+                t0 = std::exp((sd - c) * epsi_inv) * (sd - epsi) + epsi;
                 t1 = supply[i] * demand[j];
                 res += (t0 && t1) ? t0 : 0;
             }
@@ -102,7 +103,7 @@ Rcpp::List StabilizedScaling_Rcpp(const arma::mat &cost_matrix,
             for (int j = 0; j < (int)demand.size(); j++) {
                 sd = (supply_log[i] + demand_log[j]);
                 c = cost_matrix(i, j);
-                t0 = std::exp((sd - c) * epsi_inv) - std::exp(-c * epsi_inv);
+                t0 = std::exp((sd - c) * epsi_inv) - 1;
                 t1 = supply[i] * demand[j];
                 res += (t0 && t1) ? epsi * t0 : 0;
             }
@@ -116,6 +117,7 @@ Rcpp::List StabilizedScaling_Rcpp(const arma::mat &cost_matrix,
     double scaling_limit = 1e30;
     bool rescale = 0, run = 1;
     double last_step_size = std::numeric_limits<double>::infinity();
+    double tol = (epsind == epsvec.size() - 1 ? final_tol : scaling_tol);
     
     time.start_section(3);
     
@@ -161,10 +163,10 @@ Rcpp::List StabilizedScaling_Rcpp(const arma::mat &cost_matrix,
         
         if (k % check_interval == 0 || k == iter_max) {
             
-            last_step_size = std::max(arma::max(arma::abs(supply_linear_old - supply_linear)),
-                                      arma::max(arma::abs(demand_linear_old - demand_linear)));
+            last_step_size = epsi * std::max(arma::max(arma::abs(arma::log(supply_linear_old) - arma::log(supply_linear))),
+                                             arma::max(arma::abs(arma::log(demand_linear_old) - arma::log(demand_linear))));
             
-            if (last_step_size < tol || 
+            if (last_step_size < tol * epsi || 
                 k / (double)iter_max > (epsind + 1) / (double)epsvec.size() ||
                 k == iter_max) {
                 
@@ -175,6 +177,7 @@ Rcpp::List StabilizedScaling_Rcpp(const arma::mat &cost_matrix,
                     run = 0;
                 } else {
                     epsi = epsvec[++epsind];
+                    tol = (epsind == epsvec.size() - 1 ? final_tol : scaling_tol);
                 }
                 
                 rescale = 1;
