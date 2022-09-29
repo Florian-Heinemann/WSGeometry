@@ -92,4 +92,6 @@ wppplot(wpp1,wpp2,plan=transport::transport(wpp1,wpp2,p=2),cex=3,bwd=2,lwd=2,cle
 ,tstart = "center",pch=c(22,25),col=c("blue","red"),bg=c("green","orange"))
 wppplot(wpp1,wpp2,plan=transport::transport(wpp1,wpp2,p=2),cex=3,bwd=2,lwd=2,clean = TRUE
 ,tstart = "arrow",pch=c(20,20),col=c("purple","brown"),bg=c("brown","purple"),arrowScale = 0.02)
+wppplot(wpp1,wpp2,p=2,C=0.1,cex=3,bwd=2,lwd=2,clean = TRUE
+,tstart = "border",pch=c(21,21),col=c("black","black"))
 }

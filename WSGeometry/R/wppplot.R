@@ -45,6 +45,8 @@
 #' ,tstart = "center",pch=c(22,25),col=c("blue","red"),bg=c("green","orange"))
 #' wppplot(wpp1,wpp2,plan=transport::transport(wpp1,wpp2,p=2),cex=3,bwd=2,lwd=2,clean = TRUE
 #' ,tstart = "arrow",pch=c(20,20),col=c("purple","brown"),bg=c("brown","purple"),arrowScale = 0.02)
+#' wppplot(wpp1,wpp2,p=2,C=0.1,cex=3,bwd=2,lwd=2,clean = TRUE
+#' ,tstart = "border",pch=c(21,21),col=c("black","black"))
 #' @export
 wppplot<-function(A,B=NULL,plan=NULL,p=NULL,C=NULL,pch=c(16,16),bg=c("blue","red"),col=c("blue","red"),linecol="black",
                   cex=1,bwd=2,lwd=2,xlim=c(0,1),ylim=c(0,1),clean=FALSE,tstart="center",arrowScale=0.03){
@@ -87,6 +89,17 @@ wppplot<-function(A,B=NULL,plan=NULL,p=NULL,C=NULL,pch=c(16,16),bg=c("blue","red
       }
     } 
   }
+  if (!is.null(C)) {
+    t <- seq(0, 2 * pi, length.out=100)
+    x <- 0.5 * C * sin(t)
+    y <- 0.5 * C * cos(t)
+    for (i in seq(1, A$N)) {
+      lines(A$coordinates[i, 1] + x, A$coordinates[i, 2] + y, col = col[1])
+    }
+    for (i in seq(1, B$N)) {
+      lines(B$coordinates[i, 1] + x, B$coordinates[i, 2] + y, col = col[2])
+    }
+  }
   if (!is.null(plan)){
     if (tstart=="border"){
       segments(A$coordinates[plan$from, 1], A$coordinates[plan$from,2], 
@@ -94,10 +107,10 @@ wppplot<-function(A,B=NULL,plan=NULL,p=NULL,C=NULL,pch=c(16,16),bg=c("blue","red
     }
   }
   points(A$coordinates, col = col[1], 
-         pch = pch[1], cex = cex*sqrt(A$mass), lwd = bwd,bg=bg[1],xlim=xlim,ylim=ylim)
+         pch = pch[1], cex = cex*sqrt(A$mass), lwd = bwd, bg=bg[1], xlim=xlim, ylim=ylim)
   if (!is.null(B)){
     points(B$coordinates, col = col[2], 
-           pch = pch[2], cex = cex*sqrt(B$mass), lwd = bwd,bg=bg[2],xlim=xlim,ylim=ylim)
+           pch = pch[2], cex = cex*sqrt(B$mass), lwd = bwd, bg=bg[2], xlim=xlim, ylim=ylim)
   }
   if (!is.null(plan)){
     if (tstart=="center"){
