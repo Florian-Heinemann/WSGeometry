@@ -82,8 +82,8 @@ wppplot<-function(A,B=NULL,plan=NULL,p=NULL,C=NULL,pch=c(16,16),bg=c("blue","red
         plan<-transport::transport(A.tmp,B.tmp,p=p)
       }
       else{
-        uotplan<-kr_dist(A.tmp,B.tmp,p=p,C)
-        plan<-plan_convert(uotplan$plan)
+        uotplan<-kr_dist(A,B,p=p,C)
+        plan<-plan_convert(uotplan$plan,"frame")
       }
     } 
   }
@@ -93,10 +93,10 @@ wppplot<-function(A,B=NULL,plan=NULL,p=NULL,C=NULL,pch=c(16,16),bg=c("blue","red
                B$coordinates[plan$to, 1], B$coordinates[plan$to,2], col = linecol, lwd =lwd*plan$mass,lty=1)
     }
   }
-  points(A$coordinates, col = col[1] , 
+  points(A$coordinates, col = col[1], 
          pch = pch[1], cex = cex*sqrt(A$mass), lwd = bwd,bg=bg[1],xlim=xlim,ylim=ylim)
   if (!is.null(B)){
-    points(B$coordinates, col = col[2] , 
+    points(B$coordinates, col = col[2], 
            pch = pch[2], cex = cex*sqrt(B$mass), lwd = bwd,bg=bg[2],xlim=xlim,ylim=ylim)
   }
   if (!is.null(plan)){
